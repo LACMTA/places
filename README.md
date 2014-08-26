@@ -12,13 +12,13 @@ This is a start on a PLACES service to the LACMTA. It uses Google's Places API a
 
 ### Now you can access the frontpage:
 
-	[places homepage](http://127.0.0.1:5000/)
+[places homepage](http://127.0.0.1:5000/)
 
 ### The admin pages are here:
 
-	[places admin](http://127.0.0.1:5000/admin/)
+[places admin](http://127.0.0.1:5000/admin/)
 
 ### The API is here:
 
-	[places API](http://127.0.0.1:5000/api/place/)
+[places API](http://127.0.0.1:5000/api/place/)
 
