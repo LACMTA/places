@@ -10,7 +10,7 @@ These places are authorized vendors for TAP cards. The list was taken from an Ex
 	input_file = csv.DictReader(open(csvfile))
 	# prepare geocoder
 	from pygeocoder import Geocoder
-	myg=Geocoder(api_key='AIzaSyAJmxEb1O6GJMxP9QuhCc4-HV2aae2FolA')
+	myg=Geocoder(api_key='akjshdjashdkjhasd')
 	myg.set_proxy('mtaweb.metro.net:8123')
 	for r in input_file:
 	    streetzip = "%s,%s"    %(r['STREET'],r['ZIP'])
