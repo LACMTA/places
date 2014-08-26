@@ -37,6 +37,7 @@ These places are authorized vendors for TAP cards. The list was taken from an Ex
 	virtualenv .
 	. bin/activate
 	pip install -r requirements.txt
+	sudo npm install less -g
 	python manage.py runserver	
 
 ### Now you can access the frontpage:
