@@ -8,8 +8,6 @@ Werkzeug==0.9.6
 aniso8601==0.83
 cssmin==0.2.0
 flask-peewee==0.6.5
-gnureadline==6.3.3
-ipython==2.2.0
 itsdangerous==0.24
 peewee==2.3.0
 pygeocoder==1.2.5
