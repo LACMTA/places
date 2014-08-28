@@ -7,7 +7,7 @@ WTForms==2.0.1
 Werkzeug==0.9.6
 aniso8601==0.83
 cssmin==0.2.0
--e git+git@github.com:LACMTA/flask-peewee.git@910cd7120817c3599b5261e72bf2f180009c0c47#egg=flask_peewee-master
+-e git+git@github.com:LACMTA/flask-peewee.git#egg=flask_peewee-master
 gnureadline==6.3.3
 ipython==2.2.0
 itsdangerous==0.24
