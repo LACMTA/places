@@ -5,13 +5,19 @@ Jinja2==2.7.3
 MarkupSafe==0.23
 WTForms==2.0.1
 Werkzeug==0.9.6
+aniso8601==0.83
 cssmin==0.2.0
--e git+git@github.com:LACMTA/flask-peewee.git#egg=flask_peewee-master
+-e git+git@github.com:LACMTA/flask-peewee.git@910cd7120817c3599b5261e72bf2f180009c0c47#egg=flask_peewee-master
 gnureadline==6.3.3
 ipython==2.2.0
 itsdangerous==0.24
 peewee==2.3.0
+pygeocoder==1.2.5
+pytz==2014.4
+requests==2.3.0
 simplejson==3.6.2
+six==1.7.3
+uWSGI==2.0.6
 webassets==0.10.1
 wsgiref==0.1.2
 wtf-peewee==0.2.3
