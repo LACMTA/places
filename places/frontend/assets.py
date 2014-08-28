@@ -2,9 +2,9 @@ from flask_assets import Environment, Bundle
 
 
 #: application css bundle
-css_places = Bundle("less/places.less",
-                       filters="less", output="css/places.css",
-                       debug=False)
+# css_places = Bundle("less/places.less",
+#                        filters="less", output="css/places.css",
+#                        debug=False)
 
 #: consolidated css bundle
 css_all = Bundle("css/bootstrap.min.css", css_places,
