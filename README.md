@@ -52,3 +52,11 @@ These places are authorized vendors for TAP cards. The list was taken from an Ex
 
 [places API](http://127.0.0.1:5000/api/place/)
 
+## Docker
+
+Follow steps one and two on instructions for installing Dokku on Digital Ocean slice: [Use the Dokku One-Click DigitalOcean Image to Deploy a Python/Flask App](https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-deploy-a-python-flask-app)
+
+Then cd into your sourcecode and push the app to DO:
+
+	git remote add places dokku@107.170.234.105:places
+	git push places master
