@@ -60,3 +60,50 @@ Then cd into your sourcecode and push the app to DO:
 
 	git remote add places dokku@107.170.234.105:places
 	git push places master
+
+## API
+
+Quick documentation:
+
+The structure of the JSON goes like this: 
+
+	{
+		meta: {
+			version: 1409359669640,
+			model: "place",
+			previous: "",
+			page: 1,
+			count: 384,
+			next: ""
+		},
+		objects: []
+	}
+
+meta.version is an integer derived from the timestamp of the last updated place. It will increase every time an entry has changed and when one is added. . 
+meta.count is an integer that tell you the total number of vendors.
+
+note that meta.version will not change when a vendor is removed. you will need to check meta.count in that case.  
+
+objects is a list of place objects:
+
+	{
+		state: "CA ",
+		phone: "6269622625",
+		active: true,
+		address: "4100 Baldwin Park Blvd",
+		uid: 1408040831273,
+		lat: 34.085845,
+		department: 1,
+		id: 44,
+		pub_date: "2014-08-14 11:27:09",
+		product: 1,
+		city: "Baldwin Park",
+		comment: "",
+		service: 1,
+		name: "City of Baldwin Park",
+		stamp: 1408040831273,
+		zipcode: "91706",
+		lon: -117.964368
+	}
+
+Most of the keys will be familiar. department, product and service are internal keys: they will change. 
