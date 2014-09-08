@@ -97,7 +97,7 @@ admin.setup()
 
 # Exclude the uid from the resource listing
 class PlaceResource(RestResource):
-	paginate_by=400
+	paginate_by=1000
 #	 exclude = ('uid')
 
 	def get_request_metadata(self, paginated_query):
@@ -129,7 +129,7 @@ class PlaceResource(RestResource):
 
 # register our models so they are exposed via /api/<model>/
 # api.register(Comment, auth=api_auth, allowed_methods=['GET', 'POST', 'PUT'])
-api.register(Place, PlaceResource, auth=api_auth, allowed_methods=['GET', 'POST', 'PUT'])
+api.register(Place, PlaceResource, auth=api_auth, allowed_methods=['GET', 'POST', 'PUT', 'HEAD'])
 
 class ProductResource(RestResource):
 	paginate_by=200
