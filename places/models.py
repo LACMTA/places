@@ -4,6 +4,7 @@ from flask_peewee.admin import Admin, ModelAdmin
 from flask_peewee.auth import BaseUser
 from flask_peewee.rest import RestResource, UserAuthentication
 from peewee import FloatField, DateTimeField, TextField, BooleanField, IntegerField, CharField, ForeignKeyField, fn
+from flask import jsonify
 
 # from flask import Blueprint, abort, request, Response, session, redirect, url_for, g
 from flask import request
@@ -98,8 +99,35 @@ admin.setup()
 # Exclude the uid from the resource listing
 class PlaceResource(RestResource):
 	paginate_by=1000
+	allowed_methods=['GET', 'POST', 'PUT', 'HEAD']
 #	 exclude = ('uid')
 
+	# extend!
+	def object_meta(self):
+		maxstamp = self.model.select( fn.Max(self.model.stamp) ).scalar()
+		mycount = self.model.select().count()
+
+		return jsonify({
+			'model': self.get_api_name(),
+			'version': maxstamp,
+			'mycount': mycount,
+		})
+
+	# extend!
+	def api_meta(self):
+		if request.method == 'GET':
+			return self.object_meta()
+
+	# override!
+	def get_urls(self):
+		return (
+			('/', self.require_method(self.api_list, ['GET', 'POST'])),
+			('/<pk>/', self.require_method(self.api_detail, ['GET', 'POST', 'PUT', 'DELETE'])),
+			('/meta/', self.require_method(self.api_meta, ['GET','HEAD'])),
+			('/<pk>/delete/', self.require_method(self.post_delete, ['POST', 'DELETE'])),
+		)
+
+	# override!
 	def get_request_metadata(self, paginated_query):
 		"""override this method to add some more meta info"""
 		var = paginated_query.page_var
