@@ -110,7 +110,7 @@ class PlaceResource(RestResource):
 		return jsonify({
 			'model': self.get_api_name(),
 			'version': maxstamp,
-			'mycount': mycount,
+			'count': mycount,
 		})
 
 	# extend!
