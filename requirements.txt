@@ -5,7 +5,7 @@ alembic==0.4.2
 Flask-Security==1.6.4
 Flask-SQLAlchemy==0.16
 git+https://github.com/miracle2k/webassets.git
-git+https://github.com/miracle2k/flask-assets.git
+flask-assets
 flask-wtf==0.8
 Flask-Mail==0.7.6
 Flask-Failsafe==0.1
