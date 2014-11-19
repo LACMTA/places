@@ -1,6 +1,5 @@
 import os
 
-
 class BaseConfig:
 	BASEDIR = os.path.abspath(os.path.dirname(__file__))
 	PROJECT_NAME = "metroplaces"
@@ -8,7 +7,10 @@ class BaseConfig:
 	DEBUG = True
 	SECRET_KEY = "$2a$12$LdKsgm9HGNC6LzKVzJ48ju"
 
-	SQLALCHEMY_DATABASE_URI = "mysql://root@localhost/{0}".format(PROJECT_NAME)
+	DATABASE = {
+		'name': 'metroplaces.db',
+		'engine': 'peewee.SqliteDatabase',
+	}
 
 	if os.name == "nt":
 		LESS_BIN = "lessc.cmd"
@@ -24,7 +26,7 @@ class BaseConfig:
 	MAIL_USERNAME = 'test@gmail.com'
 	MAIL_PASSWORD = ''
 
-	DEFAULT_MAIL_SENDER = ("Flask-Starter", "test@gmail.com")
+	DEFAULT_MAIL_SENDER = ("metro places", "test@gmail.com")
 
 	# Flask-Security Flags
 	SECURITY_CONFIRMABLE = True
@@ -40,7 +42,19 @@ class BaseConfig:
 	SECURITY_REMEMBER_SALT = "$2a$12$unlKF.sL4gnm4icbk0tvVe"
 
 
+class DevelopmentConfig(BaseConfig):
+	DATABASE = {
+		'name': 'metroplaces_dev.db',
+		'engine': 'peewee.SqliteDatabase',
+	}
+	ASSETS_MINIFY = True
+	ASSETS_USE_CDN = False
+
 class ProductionConfig(BaseConfig):
+	DATABASE = {
+		'name': 'metroplaces_prod.db',
+		'engine': 'peewee.SqliteDatabase',
+	}
 	DEBUG = False
 	PROPAGATE_EXCEPTIONS = True
 

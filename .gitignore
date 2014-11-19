@@ -31,3 +31,9 @@ tmp
 venv
 .Python
 include
+metroplaces.sqlite
+metroplaces/metroplaces.db
+share/man/man1/ipcluster.1
+share/man/man1/ipcontroller.1
+share/man/man1/ipengine.1
+share/man/man1/ipython.1
