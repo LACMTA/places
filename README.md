@@ -1,118 +1,109 @@
-flask-starter
-=============
+# places.metro.net
 
-A batteries included boilerplate Flask project for getting new projects up and
-running quickly.
+This is a start on a PLACES service to the LACMTA. It uses Google's Places API as inspiration and includes friendly Admin pages and a map. 
 
-Features and extensions include:
+These places are authorized vendors for TAP cards. The list was taken from an Excel spreadsheet, and the latitude/longitude was looked up using Google's Geocoding service.
 
-* Bootstrap 3
-* SQLAlchemy database and automatic migrations using Flask-Alembic
-* CoffeeScript and LESS compilation and bundling using Flask-Assets
-* User management and logins using Flask-Security
-* Admin interface using Flask-Admin with automatically generated CRUD
-* REST API using Flask-Restful
-* Email using Flask-Mail
-* Better development mode using Flask-Failsafe
-* Deployment helpers for nginx/uWSGI and upstart
-* Basic management scripts using Flask-Scripts
-
-
-Getting started
----------------
-
-### Installing dependencies
-
-You may want to initialize a virtualenv for your project:
-
-    $ virtualenv venv
-    $ source venv/bin/activate
-
-First you must install the python package dependencies using PIP. By default
-the project installs database drivers for both MySQL and PostgreSQL, you can
-remove the one you do not plan to use from requirements.txt if you like.
-
-    $ pip install -r requirements.txt
-
-Compilers for LESS and CoffeeScript require the Node.js packages. Install npm
-from http://nodejs.org/ or using apt-get install npm. Once you have installed
-NPM you can must install the compilers:
-
-    $ npm install -g coffee-script
-    $ npm install -g less
+	# load TAP vendor file
+	import csv
+	csvfile='tapvendors.csv'
+	input_file = csv.DictReader(open(csvfile))
+	# prepare geocoder
+	from pygeocoder import Geocoder
+	myg=Geocoder(api_key='akjshdjashdkjhasd')
+	myg.set_proxy('mtaweb.metro.net:8123')
+	for r in input_file:
+	    streetzip = "%s,%s"    %(r['STREET'],r['ZIP'])
+	    results = myg.geocode(streetzip)
+	    lat,lon = results[0].coordinates[0],results[0].coordinates[1]
+	    vdict = {'address' : r['STREET'],
+	        'city' : r['CITY'],
+	        'comment' : r['RESTRICTIONS'],
+	        'department' : department_tap,
+	        'lat' : lat,
+	        'lon' : lon,
+	        'name' :r['VENDOR_NAME'],
+	        'phone' :r['PHONE'],
+	        'product' : product_pass,
+	        'service' : service_sales,
+	        'state' :r['STATE'],
+	        'zipcode' :r['ZIP']}
+	    Place.insert(**vdict).execute()
 
 
-### Naming your project
+## Demo
 
-Once you have installed the dependencies, call the init script to name your
-project:
+	cd places
+	virtualenv .
+	. bin/activate
+	pip install -r requirements.txt
+	sudo npm install less -g
+	python manage.py runserver	
 
-    $ python manage.py init <project_name>
+### Now you can access the frontpage:
 
-You will need to configure your database settings and then perform the required
-database initialization.
+[places homepage](http://127.0.0.1:5000/)
 
-### Creating and connecting to your database
+### The admin pages are here:
 
-Database support is provided through Flask-SQLAlchemy. By default this is
-configured to use MySQL. You can change this by using a different database
-URL in config.py. You should update this to use the correct username and host
-for your database. For example:
+[places admin](http://127.0.0.1:5000/admin/)
 
-    SQLALCHEMY_DATABASE_URI = "postgresql://andrew@localhost/{}".format(PROJECT_NAME)
+### The API is here:
 
-Before getting started you must create your database in MySQL/PostgreSQL
+[places API](http://127.0.0.1:5000/api/place/)
 
-    $ mysql
-    $ create database <database-name>
+## Docker
 
-Database migrations are handled by [Flask-Alembic](https://github.com/tobiasandtobias/flask-alembic)
+Follow steps one and two on instructions for installing Dokku on Digital Ocean slice: [Use the Dokku One-Click DigitalOcean Image to Deploy a Python/Flask App](https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-deploy-a-python-flask-app)
 
-You will need to perform all three of these steps to create your database
-before the first run.
+Then cd into your sourcecode and push the app to DO:
 
-First, have Flask-Alembic generate an alembic.ini
+	git remote add places dokku@107.170.234.105:places
+	git push places master
 
-    $ python manage.py migrate init
+## API
 
-To automatically generate a new revision:
+Quick documentation:
 
-    $ python manage.py migrate revision --autogenerate -m "message describing migration"
+The structure of the JSON goes like this: 
 
-You should generate a migration every time you change the models so that the
-database will be in sync with the models. To apply migrations you would want to
-run:
+	{
+		meta: {
+			version: 1409359669640,
+			model: "place",
+			previous: "",
+			page: 1,
+			count: 384,
+			next: ""
+		},
+		objects: []
+	}
 
-    $ python manage.py migrate upgrade head
+meta.version is an integer derived from the timestamp of the last updated place. It will increase every time an entry has changed and when one is added. . 
+meta.count is an integer that tell you the total number of vendors.
 
-### Adding an admin user
+note that meta.version will not change when a vendor is removed. you will need to check meta.count in that case.  
 
-Once you have initialized the database you should add yourself as an admin:
+objects is a list of place objects:
 
-    $ python manage.py add_admin test@example.com password
+	{
+		state: "CA ",
+		phone: "6269622625",
+		active: true,
+		address: "4100 Baldwin Park Blvd",
+		uid: 1408040831273,
+		lat: 34.085845,
+		department: 1,
+		id: 44,
+		pub_date: "2014-08-14 11:27:09",
+		product: 1,
+		city: "Baldwin Park",
+		comment: "",
+		service: 1,
+		name: "City of Baldwin Park",
+		stamp: 1408040831273,
+		zipcode: "91706",
+		lon: -117.964368
+	}
 
-This will allow you to view the admin interface at /admin once you have logged
-in
-
-### Customizing Flask-Security
-
-All of the available Flask-Security templates have been included in the project.
-They have been modified so that they extend from base templates so that you can
-easily modify the look and feel of these pages and emails without editing each
-one individually.
-
-Emails extend from the security/mails/base.html and security/mails/base.txt
-templates. User related pages extend from the security/base.html template
-(which also extends from your standard project base template)
-
-
-Deployment:
------------
-
-Deployment is done using uWSGI and nginx.
-
-Install uWSGI and use the uwsgi.conf upstart script to start uWSGI with the
-Emperor enabled. Link starter.ini into /etc/uwsgi/apps-enabled
-
-The starter.conf is the simplest nginx script to serve the site, link this into
-/etc/nginx/sites-enabled
+Most of the keys will be familiar. department, product and service are internal keys: they will change. 
