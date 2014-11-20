@@ -186,23 +186,19 @@ class Place(BaseModel):
 	}
 
 	def _geocode(self, address,city,state,zipcode):
-		from geopy.geocoders import Nominatim, GeocoderDotUS
+		# prepare geocoder
+		from pygeocoder import Geocoder
+		myg=Geocoder(api_key='AIzaSyAJmxEb1O6GJMxP9QuhCc4-HV2aae2FolA')
 		addrstr = "%s %s, %s %s" %(address,city, state, zipcode)
 		try:
-			geolocator = Nominatim()
-			loc = geolocator.geocode(addrstr)
-			self.lat = loc.latitude
-			self.lon = loc.longitude
+			loc = myg.geocode(addrstr)
 		except Exception, e:
-			print "FAIL: %s. Maybe try GeocoderDotUS?" %(e)
-			try:
-				geolocator = GeocoderDotUS()
-				loc = geolocator.geocode(addrstr)
-				self.lat = loc.latitude
-				self.lon = loc.longitude
-			except Exception, e:
-				pass
-				print "FAIL: %s. Maybe try google geocoder?" %(e)
+			print "GEOCODER FAIL: %s. Maybe try setting the proxy?" %(e)
+			myg.set_proxy('mtaweb.metro.net:8118')
+			loc = myg.geocode(addrstr)
+		self.lat = loc.latitude
+		self.lon = loc.longitude
+		self.save()
 
 	# we also do this in the admin
 	def save(self, *args, **kwargs):
