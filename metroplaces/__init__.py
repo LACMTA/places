@@ -244,7 +244,7 @@ class PlaceList(JsonResource):
 	def get(self):
 		metas = get_metas(Place)
 		mps = Place.select().where(Place.active == True)
-		placelist = [ p.__dict__() for p in mps]
+		placelist = [ p.__dict__() for p in mps ]
 		return { "meta": metas,"objects": placelist }
 api.add_resource(PlaceList, 
 	'/api/place',

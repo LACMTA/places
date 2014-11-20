@@ -220,12 +220,15 @@ class Place(BaseModel):
 
 	@property
 	def myfeatures(self):
-		myfeatures = (PlaceFeatures
-			.select(Feature)
-			.join(Feature)
-			.switch(PlaceFeatures)
-			.join(Place))
-		return json.dumps(myfeatures)
+		# myp=Place.get(Place.id==1)
+		# SELECT feature.name, feature.description FROM feature,placefeatures,place
+		# WHERE ((placefeatures.feature_id = feature.id) AND (place.id = 1));
+		q=(Feature
+			.select()
+			.join(PlaceFeatures, on=PlaceFeatures.feature)
+			.where(PlaceFeatures.place==self))
+		return [ feat.__dict__() for feat in q ]
+		
 		
 	def __repr__(self):
 		return '<Place %r>' % (self.name)
@@ -244,7 +247,7 @@ class Place(BaseModel):
 			'lat':self.lat,
 			'lon':self.lon,
 			'lon':self.lon,
-			# 'features':self.myfeatures,
+			'features':self.myfeatures,
 			'category':self.category.__dict__(),
 		}
 
@@ -277,6 +280,12 @@ class PlaceFeatures(BaseModel):
 
 	def __unicode__(self):
 		return '(%r,%r)' % (self.place.name, self.feature.name)
+
+	def __dict__(self):
+		return {
+			'place':self.place.name,
+			'feature':self.feature.name,
+		}
 
 # class Tag(BaseModel):
 # 	tag = CharField()
