@@ -246,6 +246,38 @@ api.add_resource(PlaceList,
 	)
 
 
+class PlaceMeta(JsonResource):
+	paginate_by=1000
+	allowed_methods=['GET']
+
+	@swagger.operation(
+		notes="""Use this method to get the latest version and other meta info.""",
+		responseClass=Place.__name__,
+		nickname='place meta',
+		parameters=[],
+		responseMessages=[
+			{
+				"code": 201,
+				"message": "Created. The URL should be in the Location header"
+			},
+			{
+				"code": 405,
+				"message": "Invalid input"
+			}
+		]
+	)
+	def get(self):
+		metas = get_metas(Place)
+		return { "meta": metas }
+api.add_resource(PlaceMeta, 
+	'/api/place/meta',
+	'/api/place/meta/',
+	)
+
+
+
+
+
 # CategoryList
 #   shows a list of all Places
 class CategoryList(JsonResource):
