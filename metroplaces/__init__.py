@@ -52,6 +52,11 @@ from flask.ext.restful import (
 from flask_restful_swagger import swagger
 from werkzeug.contrib.fixers import ProxyFix
 
+from metroplaces.mpassets import (
+	css_all,
+	js_vendor,
+	# js_main,
+	)
 from metroplaces.config import BaseConfig, DevelopmentConfig, ProductionConfig
 from metroplaces.utils.api import Api, JsonResource
 from metroplaces.utils import (
@@ -94,6 +99,12 @@ mail = Mail(app)
 
 # Asset bundles
 assets = webassets.Environment(app)
+assets.register('css_all', css_all)
+assets.register('js_vendor', js_vendor)
+# webassets.register('js_main', js_main)
+assets.manifest = 'cache' if not app.debug else False
+assets.cache = not app.debug
+assets.debug = app.debug
 
 # Coffee Scripts
 scripts_path = os.path.abspath(os.path.join(app.config["BASEDIR"],
@@ -154,32 +165,15 @@ def alert_class_filter(category):
 
 app.jinja_env.filters['alert_class'] = alert_class_filter
 
+myplaces = Place.select()
+placelist=[]
+for p in myplaces:
+	placelist.append([p.name,p.lat,p.lon])
 
-# Admin interface
-# class SecuredAdminIndexView(AdminIndexView):
-# 	def is_accessible(self):
-# 		return current_user.has_role("admin")
-#
-#
-# class SecuredModelView(ModelView):
-# 	def is_accessible(self):
-# 		return current_user.has_role("admin")
+@app.route('/')
+def hello():
+	return render_template('index.html', places=myplaces, placelist=placelist)
 
-
-# Automatically include views, files and APIs
-# include_files = set(["views.py", "models.py", "api.py"])
-#
-# for root, dirname, files in os.walk(app.config["BASEDIR"]):
-# 	for filename in files:
-# 		if filename in include_files:
-# 			relative = os.path.relpath(os.path.join(root, filename))[:-3]
-# 			module = ".".join(relative.split(os.sep))
-# 			__import__(module, level=-1)
-#
-# for cls in model_classes:
-# 	admin.add_view(SecuredModelView(cls, db.session,
-# 		category="CRUD"))
-#
 
 # api = Api(app)
 ###################################
