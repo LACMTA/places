@@ -33,11 +33,14 @@ These places are authorized vendors for TAP cards. The list was taken from an Ex
 
 ## Demo
 
+Set up the environment and load the fixture data:
+
 	cd places
 	virtualenv .
 	. bin/activate
 	pip install -r requirements.txt
 	sudo npm install less -g
+	python manage.py add_admin admin@metro.net 4DM1N ; python manage.py add_places
 	python manage.py runserver	
 
 ### Now you can access the frontpage:
@@ -47,6 +50,9 @@ These places are authorized vendors for TAP cards. The list was taken from an Ex
 ### The admin pages are here:
 
 [places admin](http://127.0.0.1:5000/admin/)
+	username: admin@metro.net
+	pass: 4DM1N
+
 
 ### The API is here:
 
@@ -54,9 +60,11 @@ These places are authorized vendors for TAP cards. The list was taken from an Ex
 
 ## Docker
 
-Follow steps one and two on instructions for installing Dokku on Digital Ocean slice: [Use the Dokku One-Click DigitalOcean Image to Deploy a Python/Flask App](https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-deploy-a-python-flask-app)
+Nevermind: we abandoned Docker for Chef. 
 
-Then cd into your sourcecode and push the app to DO:
+-Follow steps one and two on instructions for installing Dokku on Digital Ocean slice: [Use the Dokku One-Click DigitalOcean Image to Deploy a Python/Flask App](https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-deploy-a-python-flask-app)-
+
+-Then cd into your sourcecode and push the app to DO:-
 
 	git remote add places dokku@107.170.234.105:places
 	git push places master
@@ -87,23 +95,39 @@ note that meta.version will not change when a vendor is removed. you will need t
 objects is a list of place objects:
 
 	{
-		state: "CA ",
-		phone: "6269622625",
 		active: true,
-		address: "4100 Baldwin Park Blvd",
-		uid: 1408040831273,
-		lat: 34.085845,
-		department: 1,
-		id: 44,
-		pub_date: "2014-08-14 11:27:09",
+		address: "11151 Avalon Blvd. Suite #108",
+		category: {
+			active: true,
+			description: "TAP Vendors",
+			name: "tapvendors"
+		},
+		city: "Los Angeles",
+		comment: "No EZ Passes",
+		department: 2,
+		description: null,
+		features: [
+			{
+				description: "EZ Passes",
+				name: "ezpasses"
+			},
+			{
+				description: "Senior Passes",
+				name: "seniorpasses"
+			}
+		],
+		id: 1,
+		lat: 33.933915,
+		lon: -118.265179,
+		name: "1% Check Cashing",
+		phone: "3237772067",
 		product: 1,
-		city: "Baldwin Park",
-		comment: "",
+		pub_date: "2014-11-20 11:15:07.013884",
 		service: 1,
-		name: "City of Baldwin Park",
-		stamp: 1408040831273,
-		zipcode: "91706",
-		lon: -117.964368
+		stamp: 1416510907138,
+		state: "CA",
+		uid: 1416510907138,
+		zipcode: "90012"
 	}
 
 Most of the keys will be familiar. department, product and service are internal keys: they will change. 
