@@ -239,16 +239,27 @@ class Place(BaseModel):
 	def __dict__(self):
 		return {
 			'name':self.name,
+			'id':self.id,
 			'description':self.description,
 			'active':self.active,
 			'address':self.address,
 			'city':self.city,
 			'state':self.state,
+			'zipcode':self.zipcode,
+			'phone':self.phone,
 			'lat':self.lat,
 			'lon':self.lon,
-			'lon':self.lon,
+			'stamp':self.stamp,
+			'pub_date':str(self.pub_date),
+			'comment':self.comment,
+			'active':self.active,
 			'features':self.myfeatures,
 			'category':self.category.__dict__(),
+			# for backwards compatibility
+			'department':self.category.id,
+			'uid':self.stamp,
+			'product':1,
+			'service':1,
 		}
 
 @swagger.model
