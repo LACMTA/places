@@ -75,6 +75,8 @@ def object_list(template_name, qr, var_name='object_list', **kwargs):
 # 	return re.sub('[^a-z0-9_\-]+', '-', s.lower())
 
 def load_class(s):
+	print "{{{{{{{{{{{{{{{{{{{{ load_class(s) }}}}}}}}}}}}}}}}}}}}"
+	print s
 	path, klass = s.rsplit('.', 1)
 	__import__(path)
 	mod = sys.modules[path]
@@ -160,6 +162,7 @@ def check_password(raw_password, enc_password):
 	
 ## EXCEPTIONS
 class ImproperlyConfigured(Exception):
+	print "Database ImproperlyConfigured!"
 	pass
 
 
