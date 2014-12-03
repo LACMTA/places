@@ -4,17 +4,18 @@ from datetime import datetime
 import simplejson as json
 from peewee import (
 	Model, 
-	CharField, 
+	# the fields are defined in playhouse.apsw_ext
+	CharField,
 	# BlobField,
-	BooleanField, 
-	TextField, 
+	BooleanField,
+	TextField,
 	FloatField,
 	IntegerField,
 	TextField,
 	# UUIDField,
 	ForeignKeyField,
 	DateTimeField,
-	SqliteDatabase,
+	# SqliteDatabase,
 	)
 from flask.ext.security import (
 	Security,
@@ -32,6 +33,7 @@ from flask.ext.restful import (
 	marshal_with,
 	)
 from flask_restful_swagger import swagger
+from playhouse import migrate
 
 # from metroplaces import app, db, api
 from metroplaces import db
@@ -50,19 +52,16 @@ class Category(BaseModel):
 	"""Categories are groups of places."""
 	name = CharField(unique=True)
 	description = TextField(null=True)
-	active = BooleanField(default=True)
-	stamp = IntegerField( default=set_stamp() )
+	active = BooleanField(default=1)
 
 	resource_fields = {
 		# for swagger
 		'name': fields.String(),
 		'description': fields.String(),
 		'active': fields.Boolean(),
-		'stamp': fields.Integer(),
 	}
 
 	def save(self, *args, **kwargs):
-		self.stamp = set_stamp()
 		return super(Category, self).save(*args, **kwargs)
 
 	def __repr__(self):
@@ -91,7 +90,7 @@ class Role(BaseModel, RoleMixin):
 class User(BaseModel, UserMixin):
 	email = TextField()
 	password = TextField(default='MetroTechLA')
-	active = BooleanField(default=True)
+	active = BooleanField(default=1)
 	confirmed_at = DateTimeField(null=True)
 	
 	@property
@@ -161,7 +160,7 @@ class Place(BaseModel):
 	lon = FloatField(default=0.0)
 	zipcode = CharField(default='90012')
 	phone = CharField(default='2135551212',max_length=16)
-	active = BooleanField(default=True)
+	active = BooleanField(default=1)
 	comment = TextField(default='')
 	url = CharField(null=True)
 	
@@ -209,7 +208,6 @@ class Place(BaseModel):
 		lat = kwargs.get('lat',0.0)
 		lon = kwargs.get('lon',0.0)
 		self.stamp = set_stamp()
-		self.pub_date = datetime.now()
 		if (self.lat == 0.0):
 			self._geocode(address,city,state,zipcode)
 		return super(Place, self).save(*args, **kwargs)

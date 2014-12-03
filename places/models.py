@@ -36,7 +36,7 @@ class Place(db.Model):
 	uid = IntegerField(default=mystamp)
 	lat = FloatField(default=0.0)
 	lon = FloatField(default=0.0)
-	name = CharField(default='anonymous',max_length=50)
+	name = CharField(max_length=50)
 	address = CharField(default='1 Gateway Plaza',max_length=255)
 	city = CharField(default='Los Angeles',max_length=50)
 	state = CharField(default='CA',max_length=2)

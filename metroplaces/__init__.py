@@ -27,8 +27,10 @@ from peewee import (
 	ForeignKeyField,
 	DateTimeField,
 	SqliteDatabase,
+	PostgresqlDatabase,
 	fn,
 	)
+# from playhouse.apsw_ext import APSWDatabase
 from flask_security.core import current_user
 from flask_security.utils import logout_user
 from flask.ext.security import (
@@ -44,7 +46,6 @@ from flask.ext.mail import Mail, Message
 from flask.ext.restful import (
 	reqparse, 
 	abort, 
-	# Api,
 	Resource, 
 	fields,
 	marshal_with,
@@ -57,7 +58,6 @@ from metroplaces.mpassets import (
 	js_vendor,
 	# js_main,
 	)
-from metroplaces.config import BaseConfig, DevelopmentConfig, ProductionConfig
 from metroplaces.utils.api import Api, JsonResource
 from metroplaces.utils import (
 	slugify, 
@@ -67,11 +67,13 @@ from metroplaces.utils import (
 	)
 
 # Expose API constructs through this module
-app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
+app = Flask(__name__,instance_relative_config=True)
+app.config.from_object('config.DevelopmentConfig')
 
 # Create database connection object
 db = SqliteDatabase('metroplaces.sqlite', check_same_thread=False)
+# db = APSWDatabase(app.config["DATABASE"]["name"])
+# db = PostgresqlDatabase('places', user='metro', password='m3tr0n3t')
 
 from metroplaces.models import (
 	User,
@@ -165,14 +167,10 @@ def alert_class_filter(category):
 
 app.jinja_env.filters['alert_class'] = alert_class_filter
 
-myplaces = Place.select()
-placelist=[]
-for p in myplaces:
-	placelist.append([p.name,p.lat,p.lon])
-
 @app.route('/')
 def hello():
-	return render_template('index.html', places=myplaces, placelist=placelist)
+	placelist = [p for p in Place.select().where(Place.active == True)]
+	return render_template('index.html', places=placelist, placelist=placelist)
 
 
 # api = Api(app)
