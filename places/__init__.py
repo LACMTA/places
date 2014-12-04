@@ -15,7 +15,7 @@ static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend'
 app = Flask(__name__, template_folder=tmpl_dir, static_folder=static_dir, static_url_path='/static')
 assets.init_app(app)
 
-app.config.from_object('config.ProductionConfiguration')
+app.config.from_object('config.ProductionConfig')
 db = Database(app)
 
 # needed for authentication
