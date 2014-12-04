@@ -63,7 +63,7 @@ class DevelopmentConfig(BaseConfig):
 	# }
 	DATABASE = {
 		'name': 'places_dev',
-		'engine': 'peewee.PostgresqlModel',
+		'engine': 'peewee.PostgresqlDatabase',
 		'user':'metro',
 		'password':'m3tr0n3t',
 	}
@@ -79,7 +79,7 @@ class ProductionConfig(BaseConfig):
 	# }
 	DATABASE = {
 		'name': 'places_prod',
-		'engine': 'peewee.PostgresqlModel',
+		'engine': 'peewee.PostgresqlDatabase',
 		'user':'metro',
 		'password':'m3tr0n3t',
 	}
