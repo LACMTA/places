@@ -39,16 +39,8 @@ from flask.ext.security import (
 	)
 from flask.ext import assets as webassets
 from flask.ext.mail import Mail, Message
-# Flask restful
-from flask.ext.restful import (
-	reqparse, 
-	abort, 
-	Resource, 
-	fields,
-	marshal_with,
-	)
 from flask_restful_swagger import swagger
-from werkzeug.contrib.fixers import ProxyFix
+# from werkzeug.contrib.fixers import ProxyFix
 
 from metroplaces.mpassets import (
 	css_all,
@@ -56,14 +48,11 @@ from metroplaces.mpassets import (
 	# js_main,
 	)
 from metroplaces.utils import (
-	Api, 
-	JsonResource,
 	slugify, 
 	ReverseProxied,
 	add_helpers,
 	# crossdomain,
 	)
-
 
 # Expose API constructs through this module
 app = Flask(__name__)
@@ -90,6 +79,17 @@ from metroplaces.models import (
 	# Tag,
 	# TagRelationship,
 )
+
+from metroplaces.api import (
+	Api, 
+	JsonResource,
+	PlaceList,
+	PlaceMeta,
+	CategoryList,
+	CatPlaces,
+	CategoryMeta,
+	APlace,
+	)
 
 # parser = reqparse.RequestParser()
 
@@ -189,248 +189,29 @@ api = swagger.docs(Api(app),
 	produces=["application/json", "text/html"],
 	)
 ###################################
-parser = reqparse.RequestParser()
 
-def abort_if_place_doesnt_exist(place_id):
-	if not Place.select().where(Place.id==place_id).count():
-		abort(404, message="Place {} doesn't exist".format(place_id))
-	else:
-		return Place.get(Place.id==place_id)
-
-def abort_if_category_doesnt_exist(cat_name):
-	if not Category.select().where(Category.name==cat_name).count():
-		abort(404, message="Category {} doesn't exist".format(cat_name))
-	else:
-		return Category.get(Category.name==cat_name)
-
-def get_metas(Amodel):
-	(minstamp,maxstamp,ct) = Amodel.select(
-		fn.Min(Amodel.stamp), fn.Max(Amodel.stamp), fn.Count(Amodel.stamp), 
-	).where(Amodel.active == True).scalar(as_tuple=True)
-	return {
-			"version": maxstamp,
-			"maxstamp": maxstamp,
-			"minstamp": minstamp,
-			"count": ct,
-			"model": str(Amodel),
-		}
-
-# PlaceList
-#   shows a list of all Places
-class PlaceList(JsonResource):
-	paginate_by=1000
-	allowed_methods=['GET', 'POST', 'PUT', 'HEAD']
-
-	@swagger.operation(
-		notes="""Use this method to all active places.""",
-		responseClass=Place.__name__,
-		nickname='place list',
-		parameters=[],
-		responseMessages=[
-			{
-				"code": 201,
-				"message": "Created. The URL should be in the Location header"
-			},
-			{
-				"code": 405,
-				"message": "Invalid input"
-			}
-		]
-	)
-	def get(self):
-		metas = get_metas(Place)
-		mps = Place.select().where(Place.active == True)
-		placelist = [ p.__dict__() for p in mps ]
-		return { "meta": metas,"objects": placelist }
+# API routes
 api.add_resource(PlaceList, 
 	'/api/place',
 	'/api/place/',
 	)
-
-
-class PlaceMeta(JsonResource):
-	paginate_by=1000
-	allowed_methods=['GET']
-
-	@swagger.operation(
-		notes="""Use this method to get the latest version and other meta info.""",
-		responseClass=Place.__name__,
-		nickname='place meta',
-		parameters=[],
-		responseMessages=[
-			{
-				"code": 201,
-				"message": "Created. The URL should be in the Location header"
-			},
-			{
-				"code": 405,
-				"message": "Invalid input"
-			}
-		]
+api.add_resource(APlace, 
+	'/api/place/<int:place_id>',
+	'/api/place/<int:place_id>/',
 	)
-	def get(self):
-		metas = get_metas(Place)
-		return { "meta": metas }
-api.add_resource(PlaceMeta, 
-	'/api/place/meta',
-	'/api/place/meta/',
-	)
-
-# CategoryList
-#   shows a list of all Places
-class CategoryList(JsonResource):
-	paginate_by=1000
-	allowed_methods=['GET']
-
-	@swagger.operation(
-		notes="""Use this method to list all active categories.""",
-		responseClass=Category.__name__,
-		nickname='category list',
-		parameters=[],
-		responseMessages=[
-			{
-				"code": 201,
-				"message": "Created. The URL should be in the Location header"
-			},
-			{
-				"code": 405,
-				"message": "Invalid input"
-			}
-		]
-	)
-	def get(self):
-		metas = get_metas(Category)
-		mps = Category.select()
-		catlist = [
-			{
-				'name': p.name,
-				'description': p.description,
-			}
-			for p in mps]
-		return { "meta": metas,"objects": catlist }
-		
-api.add_resource(CategoryList, 
-	'/api/category',
-	'/api/category/',
-	)
-
-
-# CatPlaces
-#   shows a list of all Places in a specific category
-class CatPlaces(JsonResource):
-
-	@swagger.operation(
-		notes='Use this method to list places by category.',
-		responseClass=Place.__name__,
-		nickname='place-by-category',
-		parameters=[
-			{
-				"name": "category name",
-				"description": "YAML.",
-				"required": True,
-				"allowMultiple": False,
-				"dataType": Category.__name__,
-				"paramType": "category name"
-			}
-			],
-			responseMessages=[
-			{
-				"code": 201,
-				"message": "Created. The URL should be in the Location header"
-			},
-			{
-				"code": 405,
-				"message": "Invalid input"
-			}
-		]
-	)
-	def get(self,cat_name):
-		mycat = abort_if_category_doesnt_exist(cat_name)
-		metas = get_metas(Place)
-		mps = Place.select().where(Place.category == mycat).where(Place.active == True)
-		placelist = [p.__dict__() for p in mps]
-		return { "meta": metas,"objects": placelist }
-
-	# def post(self):
-	# 	pass
-
-api.add_resource(CatPlaces, 
-	'/api/category/<string:cat_name>',
-	'/api/category/<string:cat_name>/',
-	)
-
-class CategoryMeta(JsonResource):
-	paginate_by=1000
-	allowed_methods=['GET']
-
-	def get(self,cat_name):
-		mycat = abort_if_category_doesnt_exist(cat_name)
-		(minstamp,maxstamp,ct) = Place.select(
-			fn.Min(Place.stamp), fn.Max(Place.stamp), fn.Count(Place.stamp), 
-		).where(Place.category == mycat).where(Place.active == True).scalar(as_tuple=True)
-		return {
-				"version": maxstamp,
-				"maxstamp": maxstamp,
-				"minstamp": minstamp,
-				"count": ct,
-				"model": str(Place),
-			}
 api.add_resource(CategoryMeta, 
 	'/api/category/<string:cat_name>/meta',
 	'/api/category/<string:cat_name>/meta/',
 	)
-
-
-
-# Place
-#   single place: edit, delete
-class APlace(JsonResource):
-
-	@swagger.operation(
-		notes='Use this methodget info on a single place.',
-		responseClass=Place.__name__,
-		nickname='place-by-category',
-		parameters=[
-			{
-				"name": "place id",
-				"description": "YAML.",
-				"required": True,
-				"allowMultiple": False,
-				"dataType": Place.__name__,
-				"paramType": "place id"
-			}
-			],
-			responseMessages=[
-			{
-				"code": 201,
-				"message": "Created. The URL should be in the Location header"
-			},
-			{
-				"code": 405,
-				"message": "Invalid input"
-			}
-		]
+api.add_resource(PlaceMeta, 
+	'/api/place/meta',
+	'/api/place/meta/',
 	)
-	def get(self, place_id):
-		p = abort_if_place_doesnt_exist(place_id)
-		return p.__dict__()
-
-
-	# def put(self, place_id):
-	# 	msg=""
-	# 	l = abort_if_place_doesnt_exist(place_id)
-	# 	return {
-	# 		'title':l.title,
-	# 		'presentation_id':l.id,
-	# 		'score':l.get_score(),
-	# 		'session':l.sessn.title,
-	# 		'vendor':l.vendor.title,
-	# 		'msg':msg,
-	# 		'bluh':bluh,
-	# 		'email':current_user.email,
-	# 	},201
-
-api.add_resource(APlace, 
-	'/api/place/<int:place_id>',
-	'/api/place/<int:place_id>/',
+api.add_resource(CategoryList, 
+	'/api/category',
+	'/api/category/',
+	)
+api.add_resource(CatPlaces, 
+	'/api/category/<string:cat_name>',
+	'/api/category/<string:cat_name>/',
 	)

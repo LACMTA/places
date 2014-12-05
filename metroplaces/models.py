@@ -26,18 +26,13 @@ from flask.ext.security import (
 	login_required,
 	)
 from flask.ext.restful import (
-	reqparse, 
-	abort, 
-	# Api,
-	Resource, 
 	fields,
-	marshal_with,
 	)
 from flask_restful_swagger import swagger
 # from playhouse import migrate
 
 from metroplaces.app import (
-	app,
+	# app,
 	db,
 	)
 
