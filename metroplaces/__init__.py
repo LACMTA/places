@@ -26,11 +26,11 @@ from peewee import (
 	# UUIDField,
 	ForeignKeyField,
 	DateTimeField,
-	SqliteDatabase,
-	PostgresqlDatabase,
+	# SqliteDatabase,
+	# PostgresqlDatabase,
+	# MySQLDatabase,
 	fn,
 	)
-# from playhouse.apsw_ext import APSWDatabase
 from flask_security.core import current_user
 from flask_security.utils import logout_user
 from flask.ext.security import (
@@ -68,12 +68,17 @@ from metroplaces.utils import (
 
 # Expose API constructs through this module
 app = Flask(__name__,instance_relative_config=True)
-app.config.from_object('config.DevelopmentConfig')
 
-# Create database connection object
-db = SqliteDatabase('metroplaces.sqlite', check_same_thread=False)
-# db = APSWDatabase(app.config["DATABASE"]["name"])
-# db = PostgresqlDatabase('places', user='metro', password='m3tr0n3t')
+# #####################################################
+# CHOOSE CONFIGURATION HERE
+# #####################################################
+# Look in the config.py for these classes
+# app.config.from_object('config.DevelopmentConfig')
+app.config.from_object('config.ProductionConfig')
+# #####################################################
+
+# database bindings have been stored in the config file!
+db = app.config['DB']
 
 from metroplaces.models import (
 	User,
@@ -202,7 +207,7 @@ def abort_if_category_doesnt_exist(cat_name):
 def get_metas(Amodel):
 	(minstamp,maxstamp,ct) = Amodel.select(
 		fn.Min(Amodel.stamp), fn.Max(Amodel.stamp), fn.Count(Amodel.stamp), 
-	).scalar(as_tuple=True)
+	).where(Place.active == True).scalar(as_tuple=True)
 	return {
 			"version": maxstamp,
 			"maxstamp": maxstamp,
@@ -270,11 +275,9 @@ class PlaceMeta(JsonResource):
 api.add_resource(PlaceMeta, 
 	'/api/place/meta',
 	'/api/place/meta/',
+	'/api/category/meta',
+	'/api/category/meta/',
 	)
-
-
-
-
 
 # CategoryList
 #   shows a list of all Places
@@ -358,6 +361,29 @@ api.add_resource(CatPlaces,
 	'/api/category/<string:cat_name>',
 	'/api/category/<string:cat_name>/',
 	)
+
+class CategoryMeta(JsonResource):
+	paginate_by=1000
+	allowed_methods=['GET']
+
+	def get(self,cat_name):
+		mycat = abort_if_category_doesnt_exist(cat_name)
+		(minstamp,maxstamp,ct) = Place.select(
+			fn.Min(Place.stamp), fn.Max(Place.stamp), fn.Count(Place.stamp), 
+		).where(Place.category == mycat).where(Place.active == True).scalar(as_tuple=True)
+		return {
+				"version": maxstamp,
+				"maxstamp": maxstamp,
+				"minstamp": minstamp,
+				"count": ct,
+				"model": str(Place),
+			}
+api.add_resource(CategoryMeta, 
+	'/api/category/<string:cat_name>/meta',
+	'/api/category/<string:cat_name>/meta/',
+	)
+
+
 
 # Place
 #   single place: edit, delete
