@@ -34,10 +34,12 @@ from flask.ext.restful import (
 	marshal_with,
 	)
 from flask_restful_swagger import swagger
-from playhouse import migrate
+# from playhouse import migrate
 
-# from metroplaces import app, db, api
-from metroplaces import db
+from metroplaces.app import (
+	app,
+	db,
+	)
 
 def set_stamp():
 	d = datetime.now()
@@ -55,6 +57,7 @@ class Category(BaseModel):
 	name = CharField(unique=True)
 	description = TextField(null=True)
 	active = BooleanField(default=1)
+	stamp = BigIntegerField( default=set_stamp() )	# 1417737461016
 
 	resource_fields = {
 		# for swagger
@@ -64,6 +67,7 @@ class Category(BaseModel):
 	}
 
 	def save(self, *args, **kwargs):
+		self.stamp = set_stamp()
 		return super(Category, self).save(*args, **kwargs)
 
 	def __repr__(self):
