@@ -179,7 +179,7 @@ def hello():
 
 # api = Api(app)
 ###################################
-# This is important:
+# This is important for Swagger
 api = swagger.docs(Api(app),
 	apiVersion='0.1',
 	api_spec_url='/api/spec',

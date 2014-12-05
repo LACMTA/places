@@ -7,6 +7,7 @@ from flask.ext.admin.contrib.peewee import ModelView
 from metroplaces.app import (
 	app,
 	db,
+	user_datastore,
 	)
 from metroplaces.models import (
 	User,
