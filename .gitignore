@@ -58,3 +58,6 @@ places/static/dependencies/Site title and description - Webmaster Tools Help.htm
 static/dependencies/Site title and description - Webmaster Tools Help_files
 static/dependencies/Site title and description - Webmaster Tools Help.html
 metroplaces_dev.db
+*.tgz
+metroplaces/static/css/places.min.css
+metroplaces/static/js/vendor.min.js
