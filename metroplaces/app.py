@@ -8,28 +8,14 @@ from flask import (
 	Response,
 	session,
 	get_flashed_messages,
-	jsonify,
-	request,
+	# jsonify,
+	# request,
 	render_template,
 	redirect,
 	# g,
 )
-from peewee import (
-	Model, 
-	CharField, 
-	# BlobField,
-	BooleanField, 
-	TextField, 
-	FloatField,
-	IntegerField,
-	TextField,
-	# UUIDField,
-	ForeignKeyField,
-	DateTimeField,
-	fn,
-	)
-from flask_security.core import current_user
-from flask_security.utils import logout_user
+# from flask_security.core import current_user
+# from flask_security.utils import logout_user
 from flask.ext.security import (
 	Security,
 	PeeweeUserDatastore,
@@ -48,7 +34,7 @@ from metroplaces.mpassets import (
 	# js_main,
 	)
 from metroplaces.utils import (
-	slugify, 
+	# slugify,
 	ReverseProxied,
 	add_helpers,
 	# crossdomain,
@@ -101,7 +87,7 @@ app.security = Security(app, user_datastore)
 mail = Mail(app)
 
 # WSGI
-# app.wsgi_app = ReverseProxied(app.wsgi_app)
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 # Asset bundles
 assets = webassets.Environment(app)

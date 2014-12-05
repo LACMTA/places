@@ -4,47 +4,16 @@ from functools import wraps
 import types
 from werkzeug.contrib.fixers import ProxyFix
 from flask import (
-	# Flask,
-	# # Blueprint,
-	# Response,
-	# session,
-	# get_flashed_messages,
-	# jsonify,
 	request,
-	# render_template,
-	# redirect,
-	# g,
 )
 from peewee import (
-	# Model,
-	# CharField,
-	# # BlobField,
-	# BooleanField,
-	# TextField,
-	# FloatField,
-	# IntegerField,
-	# TextField,
-	# # UUIDField,
-	# ForeignKeyField,
-	# DateTimeField,
 	fn,
 	)
 
-from metroplaces.mpassets import (
-	css_all,
-	js_vendor,
-	# js_main,
-	)
-from metroplaces.utils import (
-	slugify, 
-	ReverseProxied,
-	add_helpers,
-	# crossdomain,
-	)
 from metroplaces.models import (
-	User,
-	Role,
-	UserRoles,
+	# User,
+	# Role,
+	# UserRoles,
 	Category,
 	Place,
 	PlaceFeatures,
