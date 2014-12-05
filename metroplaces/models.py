@@ -11,6 +11,7 @@ from peewee import (
 	TextField,
 	FloatField,
 	IntegerField,
+	BigIntegerField,
 	TextField,
 	# UUIDField,
 	ForeignKeyField,
@@ -40,7 +41,8 @@ from metroplaces import db
 
 def set_stamp():
 	d = datetime.now()
-	return int( (int(time.mktime(d.timetuple())) *1000) +(d.microsecond/100))
+	stamp = (int(time.mktime(d.timetuple())) *1000) +(d.microsecond/100)
+	return int( stamp )
 
 class BaseModel(Model):
 	class Meta:
@@ -152,7 +154,7 @@ class Place(BaseModel):
 	name = CharField()
 	description = TextField(null=True)
 	pub_date = DateTimeField( default=datetime.now() )
-	stamp = IntegerField( default=set_stamp() )
+	stamp = BigIntegerField( default=set_stamp() )	# 1417737461016
 	address = CharField(null=True)
 	city = CharField(default='Los Angeles')
 	state = CharField(max_length=2,default='CA')
