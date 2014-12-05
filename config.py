@@ -1,9 +1,17 @@
-import os
+import os, sys
+from peewee import (
+	SqliteDatabase,
+	PostgresqlDatabase,
+	MySQLDatabase,
+	)
 
 # config
 
 class BaseConfig:
-	BASEDIR = os.path.abspath(os.path.dirname(__file__))
+	try:
+		BASEDIR = os.path.abspath(os.path.dirname(__file__))
+	except:
+		BASEDIR = sys.argv[0]
 	PROJECT_NAME = "metroplaces"
 	SECRET_KEY = "m3tr0n3t"
 
@@ -17,12 +25,7 @@ class BaseConfig:
 		'engine': 'peewee.SqliteDatabase',
 		'check_same_thread': False,
 	}
-	# DATABASE = {
-	# 	'name': 'places_base',
-	# 	'engine': 'peewee.PostgresqlModel',
-	# 	'user':'metro',
-	# 	'password':'m3tr0n3t',
-	# }
+	DB = SqliteDatabase(DATABASE['name'], check_same_thread=DATABASE['check_same_thread'])
 
 	if os.name == "nt":
 		LESS_BIN = "lessc.cmd"
@@ -57,18 +60,18 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
 	# DATABASE = {
 	# 	'name': 'metroplaces_dev.db',
-	# 	# 'engine': 'peewee.SqliteDatabase',
+	# 	'engine': 'peewee.SqliteDatabase',
 	# 	'check_same_thread': False,
-	# 	'engine': 'APSWDatabase',
 	# }
 	DATABASE = {
-		'name': 'places_dev',
-		'engine': 'peewee.PostgresqlDatabase',
+		'name': 'metroplaces',
+		'engine': 'peewee.MySQLDatabase',
 		'user':'metro',
 		'password':'m3tr0n3t',
 	}
 	ASSETS_MINIFY = True
 	ASSETS_USE_CDN = False
+	DB = MySQLDatabase(DATABASE['name'], user=DATABASE['user'], password=DATABASE['password'])
 
 class ProductionConfig(BaseConfig):
 	# DATABASE = {
@@ -83,6 +86,8 @@ class ProductionConfig(BaseConfig):
 		'user':'metro',
 		'password':'m3tr0n3t',
 	}
+	DB = PostgresqlDatabase(DATABASE['name'], user=DATABASE['user'], password=DATABASE['password'])
+	
 	DEBUG = False
 	PROPAGATE_EXCEPTIONS = True
 
