@@ -4,7 +4,11 @@ from flask.ext.security.utils import encrypt_password
 from flask.ext.admin import Admin, BaseView, expose, AdminIndexView
 from flask.ext.admin.contrib.peewee import ModelView
 
-from metroplaces import app, db, user_datastore
+from metroplaces.app import (
+	app,
+	db,
+	user_datastore,
+	)
 from metroplaces.models import (
 	User,
 	Role,
@@ -462,28 +466,18 @@ admin.add_view(ModelView(PlaceFeatures))
 # admin.add_view(ModelView(Tag))
 # admin.add_view(ModelView(TagRelationship))
 
-def create_tables():
+def create_tables(mdb):
 	# Create table for each model if it does not exist.
 	# Use the underlying peewee database object instead of the
 	# flask-peewee database wrapper:
-	db.create_tables([User], safe=True)
-	db.create_tables([Role], safe=True)
-	db.create_tables([UserRoles], safe=True)
-	db.create_tables([Category], safe=True)
-	db.create_tables([Place], safe=True)
-	db.create_tables([Feature], safe=True)
-	db.create_tables([PlaceFeatures], safe=True)
-	# db.create_tables([Tag], safe=True)
-	# db.create_tables([TagRelationship], safe=True)
-
-
+	mdb.create_tables([User, Role, UserRoles, Category, Place, Feature, PlaceFeatures], safe=True)
 
 if __name__ == "__main__":
 	import logging
 	logging.basicConfig()
 	logging.getLogger().setLevel(logging.DEBUG)
 
-	create_tables()
+	create_tables(db)
 
 	# install some data
 	# why does this fail?
