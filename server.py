@@ -1,19 +1,64 @@
 from flask import Flask, render_template, request, url_for, redirect
-from flask.ext.security import SQLAlchemyUserDatastore, Security, \
-		login_required, current_user, logout_user
+from flask.ext.security import (
+	SQLAlchemyUserDatastore, 
+	Security, 
+	login_required, 
+	current_user, 
+	logout_user,
+	)
 from flask.ext.security.utils import encrypt_password, verify_password
-from flask.ext.restless import APIManager, ProcessingException
 from flask.ext.login import user_logged_in
-from flask.ext.admin import Admin
+from flask.ext.admin import (
+	BaseView, 
+	expose, 
+	Admin,
+	)
 from flask_jwt import JWT, jwt_required
+from flask.ext.principal import Principal, Permission, RoleNeed
+from flask_restful_swagger import swagger
 
 from database import db
-from models import User, Role, SomeStuff, user_datastore
-from admin import AdminModelView, UserModelView, LogoutView, LoginView
+from models import (
+	User, 
+	Role, 
+	SomeStuff, 
+	user_datastore,
+	)
+from places.models import (
+	Category, 
+	Feature, 
+	Place,
+	)
+from places.api import (
+	Api, 
+	JsonResource,
+	PlaceList,
+	PlaceMeta,
+	CategoryList,
+	CatPlaces,
+	CategoryMeta,
+	APlace,
+	)
+from admin import (
+	AdminModelView, 
+	UserModelView, 
+	LogoutView, 
+	LoginView,
+	PlaceAdmin,
+	CategoryAdmin,
+	FeatureAdmin,
+	)
 
 # Configuration  ==============================================================
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
+
+# Setup Flask-Principal  =======================================================
+# load the extension
+principals = Principal(app)
+# Create a permission with a single Need, in this case a RoleNeed.
+admin_permission = Permission(RoleNeed('admin'))
+tapadmin_permission = Permission(RoleNeed('tapadmin'))
 
 # Setup Flask-Security  =======================================================
 security = Security(app, user_datastore)
@@ -47,29 +92,53 @@ def log_out():
 	logout_user()
 	return redirect(request.args.get('next') or '/')
 
-# Flask-Restless API  =========================================================
-@jwt_required()
-def auth_func(**kw):
-	return True
+# api = Api(app)
+###################################
+# This is important for Swagger
+api = swagger.docs(Api(app),
+	apiVersion='0.1',
+	api_spec_url='/api/spec',
+	description='Metro Places API',
+	# basePath='http://localhost:5000/api/v1',
+	# resourcePath='/',
+	produces=["application/json", "text/html"],
+	)
+###################################
 
-apimanager = APIManager(app, flask_sqlalchemy_db=db)
-apimanager.create_api(SomeStuff,
-	methods=['GET', 'POST', 'DELETE', 'PUT'],
-	url_prefix='/api/v1',
-	collection_name='free_stuff',
-	include_columns=['data1', 'data2', 'user_id'])
-apimanager.create_api(SomeStuff,
-	methods=['GET', 'POST', 'DELETE', 'PUT'],
-	url_prefix='/api/v1',
-	preprocessors=dict(GET_SINGLE=[auth_func], GET_MANY=[auth_func]),
-	collection_name='protected_stuff',
-	include_columns=['data1', 'data2', 'user_id'])
+# API routes
+api.add_resource(PlaceList, 
+	'/api/place',
+	'/api/place/',
+	)
+api.add_resource(APlace, 
+	'/api/place/<int:place_id>',
+	'/api/place/<int:place_id>/',
+	)
+api.add_resource(CategoryMeta, 
+	'/api/category/<string:cat_name>/meta',
+	'/api/category/<string:cat_name>/meta/',
+	)
+api.add_resource(PlaceMeta, 
+	'/api/place/meta',
+	'/api/place/meta/',
+	)
+api.add_resource(CategoryList, 
+	'/api/category',
+	'/api/category/',
+	)
+api.add_resource(CatPlaces, 
+	'/api/category/<string:cat_name>',
+	'/api/category/<string:cat_name>/',
+	)
 
 # Flask-Admin  ================================================================
-admin = Admin(app)
+admin = Admin(app,name='Metro Places')
+
 admin.add_view(UserModelView(User, db.session, category='Auth'))
 admin.add_view(AdminModelView(Role, db.session, category='Auth'))
-admin.add_view(AdminModelView(SomeStuff, db.session))
+admin.add_view(PlaceAdmin(Place, db.session))
+admin.add_view(CategoryAdmin(Category, db.session))
+admin.add_view(FeatureAdmin(Feature, db.session))
 admin.add_view(LogoutView(name='Logout', endpoint='logout'))
 admin.add_view(LoginView(name='Login', endpoint='login'))
 
@@ -81,10 +150,6 @@ def init_app():
 def create_test_models():
 	user_datastore.create_user(email='test', password=encrypt_password('test'))
 	user_datastore.create_user(email='test2', password=encrypt_password('test2'))
-	stuff = SomeStuff(data1=2, data2='toto', user_id=1)
-	db.session.add(stuff)
-	stuff = SomeStuff(data1=5, data2='titi', user_id=1)
-	db.session.add(stuff)
 	db.session.commit()
 
 @app.before_first_request

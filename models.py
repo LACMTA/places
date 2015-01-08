@@ -8,6 +8,8 @@ roles_users = db.Table('roles_users',
 class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	email = db.Column(db.String(255), unique=True)
+	firstname = db.Column(db.String(255))
+	lastname = db.Column(db.String(255))
 	password = db.Column(db.String(255))
 	active = db.Column(db.Boolean())
 	confirmed_at = db.Column(db.DateTime())
@@ -22,10 +24,19 @@ class User(db.Model, UserMixin):
 	def __repr__(self):
 		return '<models.User[email=%s]>' % self.email
 
+	def __unicode__(self):
+		return "%s %s" %(self.firstname,self.lastname)
+
 class Role(db.Model, RoleMixin):
 	id = db.Column(db.Integer(), primary_key=True)
 	name = db.Column(db.String(80), unique=True)
 	description = db.Column(db.String(255))
+
+	def __repr__(self):
+		return '<models.Role[name=%s]>' % self.name
+
+	def __unicode__(self):
+		return "%s" %(self.description)
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 

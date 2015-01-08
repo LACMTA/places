@@ -4,11 +4,11 @@ class Config(object):
 	DEBUG = False
 	TESTING = False
 	SQLALCHEMY_DATABASE_URI = ''
-
-	APP_NAME = 'ApplicationName'
+	SQLALCHEMY_TRACK_MODIFICATIONS = True
+	APP_NAME = 'Metro Places'
 	SECRET_KEY = 'add_secret'
 	JWT_EXPIRATION_DELTA = timedelta(days=30)
-	JWT_AUTH_URL_RULE = '/api/v1/auth'
+	# JWT_AUTH_URL_RULE = '/api/v1/auth'
 	SECURITY_REGISTERABLE = True
 	SECURITY_RECOVERABLE = True
 	SECURITY_TRACKABLE = True
