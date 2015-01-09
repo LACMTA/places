@@ -103,12 +103,19 @@ def create_app(config_name):
 	admin.add_view(LogoutView(name='Logout', endpoint='logout'))
 	admin.add_view(LoginView(name='Login', endpoint='login'))
 
-	app.add_url_rule('/sitemap', view_func=Sitemap.as_view('sitemap'))
+	sitemap_view = Sitemap.as_view('sitemap')
+	app.add_url_rule('/sitemap', view_func=sitemap_view)
+	
+	placemap_view = Placemap.as_view('placemap')
 	app.add_url_rule('/placemap/', 
-		defaults={'category': 'tapvendors'}, 
-		view_func=Placemap.as_view('placemap'),
+		view_func=placemap_view,
 		methods=['GET'],
 		)
+	# app.add_url_rule('/placemap/<string:category>',
+	# 	defaults={'category': 'tapvendors'},
+	# 	view_func=placemap_view,
+	# 	methods=['GET'],
+	# 	)
 
 	return app
 
