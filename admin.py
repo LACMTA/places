@@ -58,17 +58,6 @@ class PlaceAdmin(AdminModelView):
 		'category': 'name',
 	}
 	column_searchable_list = ( Place.name, Place.city )
-	# form_create_rules = ('name', 'address', 'city', 'state','zipcode','phone',
-	# 	'active',
-	# 	'features','categories',
-	# 	'description','comment','url',
-	# 	)
-	# form_edit_rules = ('name', 'address', 'city', 'state','zipcode','phone',
-	# 	# 'lat','lon',	# no edits please! wtf truncates the float
-	# 	'active',
-	# 	'features','categories',
-	# 	'description','comment','url',
-	# 	)
 	form_rules = [
 		rules.FieldSet(('name', 'address', 'city', 'state','zipcode','phone'), 'Place Location (lat/lng will be determined from the address)'),
 		rules.FieldSet(('features','categories','active'), 'add features, set the category and status'),
@@ -129,22 +118,4 @@ class FeatureAdmin(AdminModelView):
 	def after_model_change(self, form, model,is_created):
 		model.stamp = set_stamp()
 		db.session.commit()
-
-
-"""	name = db.Column(db.String(50))
-	description = db.Column(db.String(255))
-	pub_date = db.Column(db.DateTime(), default=datetime.now() )
-	stamp = db.Column(db.Integer, default=set_stamp() ) # 1417737461016
-	address = db.Column(db.String(128))
-	city = db.Column(db.String(40),default='Los Angeles')
-	state = db.Column(db.String(2),default='CA')
-	lat = db.Column(db.Float(),default=0.0)
-	lon = db.Column(db.Float(),default=0.0)
-	zipcode = db.Column(db.String(10),default='90012')
-	phone = db.Column(db.String(16),default='2135551212')
-	active =  db.Column(db.Boolean())
-	comment = db.Column(db.String(255))
-	url = db.Column(db.String(255))
-"""
-
 

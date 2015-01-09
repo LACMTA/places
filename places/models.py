@@ -156,25 +156,6 @@ class Place(db.Model):
 			'description':maincat.description,
 		}
 
-
-	# @property
-	# def myfeatures(self):
-	# 	# myp=Place.get(Place.id==1)
-	# 	# SELECT feature.name, feature.description FROM feature,placefeatures,place
-	# 	# WHERE ((placefeatures.feature_id = feature.id) AND (place.id = 1));
-	# 	q=(Feature
-	# 		.select()
-	# 		.join(PlaceFeatures, on=PlaceFeatures.feature)
-	# 		.where(PlaceFeatures.place==self))
-	# 	return [ feat.__dict__() for feat in q ]
-	#
-	#
-	# def __repr__(self):
-	# 	return '<Place %r>' % (self.name)
-	#
-	# def __unicode__(self):
-	# 	return self.name
-
 	def mydict(self):
 		return {
 			'name':self.name,
