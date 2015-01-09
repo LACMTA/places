@@ -20,6 +20,12 @@ def has_no_empty_params(rule):
 	arguments = rule.arguments if rule.arguments is not None else ()
 	return len(defaults) >= len(arguments)
 
+
+class Placemap(View):
+	def dispatch_request(self,category='tapvendors'):
+		placelist = [p for p in Place.query.filter(Place.active==True).all()]
+		return render_template('map.html', places=placelist, category=category)
+
 class Sitemap(View):
 	# like a class-based view
 	def dispatch_request(self):

@@ -5,6 +5,7 @@ from flask.ext.principal import Principal
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import encrypt_password
+from flask.ext import assets as webassets
 
 from config import config
 from models import (
@@ -18,6 +19,7 @@ from places.models import (
 	)
 from places.views import (
 	Sitemap,
+	Placemap,
 	)
 from admin import (
 	AdminModelView, 
@@ -33,12 +35,18 @@ from places.api import (
 	get_metas,
 	api,
 	)
+from places.mpassets import (
+	css_all,
+	js_vendor,
+	# js_main,
+	)
 from database import db
 
 principal = Principal()
 security = Security()
 # jwt = JWT()
 admin = Admin(name='Metro Places')
+assets = webassets.Environment()
 
 from config import config
 	
@@ -63,6 +71,9 @@ def create_app(config_name):
 	# jwt.init_app(app)
 	api.init_app(app)
 	admin.init_app(app)
+	assets.init_app(app)
+	assets.register('css_all', css_all)
+	assets.register('js_vendor', js_vendor)
 
 	with app.app_context():
 		db.init_app(app)
@@ -91,7 +102,9 @@ def create_app(config_name):
 	admin.add_view(FeatureAdmin(Feature, db.session))
 	admin.add_view(LogoutView(name='Logout', endpoint='logout'))
 	admin.add_view(LoginView(name='Login', endpoint='login'))
+
 	app.add_url_rule('/sitemap', view_func=Sitemap.as_view('sitemap'))
+	app.add_url_rule('/placemap', view_func=Placemap.as_view('placemap'))
 
 	return app
 
