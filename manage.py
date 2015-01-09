@@ -28,7 +28,7 @@ def init_app():
 
 
 @manager.command
-def add_features():
+def add_places():
 	"""
 		Add the vendor features, categories, 
 		then add the vendors
