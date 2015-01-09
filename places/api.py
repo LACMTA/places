@@ -1,86 +1,30 @@
-from sqlalchemy.sql import func
-# from flask.ext import restful
-from flask.ext import restplus
-# from flask.ext.restplus import Api, Resource, fields
 from functools import wraps
 import types
-from werkzeug.contrib.fixers import ProxyFix
-from flask import (
-	request,
-)
+from sqlalchemy.sql import func
+from flask import request, url_for, redirect
+from flask.ext.restplus import (
+	Api,
+	Resource,
+	abort,
+	)
 
-from places.models import (
-	# User,
-	# Role,
-	# UserRoles,
-	Category,
-	Place,
-	Feature,
-	# Tag,
-	# TagRelationship,
-)
-
-class Api(restplus.Api):
-	"""
-	Flask Restful intercepts all exceptions and returns JSON error which is
-	really annoying if we want to serve both an API and standard pages within
-	the same project.
-
-	Here we split the error handling based on the request path prefix. There
-	are also convenience methods for
-	"""
-	def __init__(self, app, prefix='', default_mediatype='application/json',
-			decorators=None):
-		super(Api, self).__init__(app, prefix, default_mediatype, decorators)
-
-		app.handle_exception = self.handle_exception
-		app.handle_user_exception = self.handle_user_exception
-
-	def handle_exception(self, e):
-		if request.path.startswith(self.prefix):
-			return super(Api, self).handle_error(e)
-
-		if request.endpoint in self.endpoints:
-			return super(Api, self).handle_error(e)
-		else:
-			return Flask.handle_exception(self.app, e)
-
-	def handle_user_exception(self, e):
-		if request.path.startswith(self.prefix):
-			return super(Api, self).handle_error(e)
-
-		if request.endpoint in self.endpoints:
-			return super(Api, self).handle_error(e)
-		else:
-			return Flask.handle_user_exception(self.app, e)
-
-	def serialize_date(self, date):
-		if date:
-			if current_user.is_active():
-				utc = pytz.utc.localize(date)
-				localized = utc.astimezone(current_user.get_tz())
-				return localized.isoformat()
-			return date.isoformat()
-
-		return None
-
-	def parse_date(self, date_string):
-		if date_string:
-			localized = dateutil.parser.parse(date_string)
-			return localized.astimezone(pytz.utc).replace(tzinfo=None)
-
-		return None
-
+api = Api(
+	contact='Douglas Goodwin <goodwind@metro.net>',
+	license='',
+	version='0.1',
+	title='Metro Places API',
+	description='The Metro Places webservice describes all Metro properties with a physical address',
+	)
 
 def abort_if_place_doesnt_exist(place_id):
 	if not Place.query.filter(Place.id==place_id).count():
-		restplus.abort(404, message="Place {} doesn't exist".format(place_id))
+		abort(404, message="Place {} doesn't exist".format(place_id))
 	else:
 		return Place.query.filter(Place.id==place_id).first()
 
 def abort_if_category_doesnt_exist(cat_name):
 	if not Category.query.filter(Category.name==cat_name).count():
-		restplus.abort(404, message="Category {} doesn't exist".format(cat_name))
+		abort(404, message="Category {} doesn't exist".format(cat_name))
 	else:
 		return Category.query.filter(Category.name==cat_name).first()
 
@@ -207,7 +151,7 @@ def api_helper_wrapper(method):
 	return method
 
 
-class JsonResource(restplus.Resource):
+class JsonResource(Resource):
 	"""
 	A restful resource that merges any JSON data in the POST/PUT HTTP body to
 	the request.values dictionary
@@ -215,6 +159,7 @@ class JsonResource(restplus.Resource):
 	method_decorators = [
 		json_data_wrapper,
 		api_error_wrapper,
-		api_helper_wrapper]
+		api_helper_wrapper,
+	]
 
 

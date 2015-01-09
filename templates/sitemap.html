@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% block head %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<title>{% block title %}{% endblock %} - {{config.APP_NAME}}</title>
+		{% endblock %}
+	</head>
+	<body>
+		{% include "_nav.html" %}
+
+		<section class="content">
+			<h1>site map</h1>
+			{% for link in links %}
+				<ul>
+					<li><a href='{{link[0]}}'>{{link[0]}} ({{link[1]}})</a>
+				</ul>
+			{% endfor %}
+		</section>
+
+		<footer>
+			{% block footer %}
+			{% endblock %}
+		</footer>
+
+	</body>
+</html>

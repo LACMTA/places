@@ -20,7 +20,6 @@ from database import db
 def set_stamp():
 	d = datetime.now()
 	stamp = (int(time.mktime(d.timetuple())) *1000) +(d.microsecond/100)
-	print "set the stamp to %s" %(stamp)
 	return int( stamp )
 
 class Category(db.Model):
@@ -39,11 +38,6 @@ class Category(db.Model):
 		'active': fields.Boolean(),
 	}
 
-	def save(self, *args, **kwargs):
-		# save() method never gets called -- sqlalchemy?
-		self.stamp = set_stamp()
-		return super(Category, self).save(*args, **kwargs)
-
 	def __repr__(self):
 		return '<Category %r>' % (self.name)
 
@@ -55,17 +49,6 @@ class Category(db.Model):
 			'name':self.name,
 			'description':self.description,
 		}
-
-"""
-id = db.Column(db.Integer, primary_key=True)
-email = db.Column(db.String(50))
-name = db.Column(db.String(50))
-addresses = db.relationship(
-	'Address', 
-	backref='person',
-	lazy='dynamic',
-	)
-"""
 
 placefeatures = db.Table('placefeatures',
 	db.Column('feature_id', db.Integer, db.ForeignKey('feature.id')),
@@ -141,20 +124,6 @@ class Place(db.Model):
 			loc = geolocator.geocode(addrstr)
 			return 0.0,0.0
 
-	# def save(self, *args, **kwargs):
-	# 	print "LET'S SAVE!"
-	# 	address = kwargs.get('address',"1 Gateway Plaza")
-	# 	city = kwargs.get('city',"Los Angeles")
-	# 	state = kwargs.get('state',"CA")
-	# 	zipcode = kwargs.get('zipcode',"90012")
-	# 	lat = kwargs.get('lat',0.0)
-	# 	lon = kwargs.get('lon',0.0)
-	# 	self.stamp = set_stamp()
-	# 	if (lat==0.0):
-	# 		self._geocode(address,city,state,zipcode)
-	# 	return super(Place, self).save(*args, **kwargs)
-
-	
 	# FKs
 	features = db.relationship('Feature', secondary=placefeatures, 
 		backref=db.backref('placefeatures', lazy='dynamic'))

@@ -23,7 +23,7 @@ class Config(object):
 		pass
 
 class ProductionConfig(Config):
-	SQLALCHEMY_DATABASE_URI = 'mysql://username:password@localhost/db'
+	SQLALCHEMY_DATABASE_URI = 'mysql://metronet:m3tr0n3t@localhost/places'
 
 class DevelopmentConfig(Config):
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///data.sqlite'

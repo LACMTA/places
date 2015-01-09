@@ -1,11 +1,19 @@
-import os, sys
+import os, sys, csv
 sys.path.append('/var/www/envs/places')
 from flask.ext.script import Manager, Server, Shell
-from flask.ext.sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
 
 from app import create_app
-application = create_app('development')
+from database import db
+from places.models import (
+	Category,
+	Place,
+	Feature,
+	# Tag,
+	# TagRelationship,
+)
+
+# application = create_app('development')
+application = create_app('production')
 
 manager = Manager(application)
 # manager.add_command("migrate", ManageMigrations())
@@ -162,15 +170,22 @@ if __name__ == "__main__":
 	logging.basicConfig()
 	logging.getLogger().setLevel(logging.DEBUG)
 
-	with application.app_context():
-		init_app()
-		
 	manager.run()
 
 
 
 """
 import csv
+import os, sys
+sys.path.append('/var/www/envs/places')
+from flask.ext.script import Manager, Server, Shell
+from flask.ext.sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+
+from app import create_app
+# application = create_app('development')
+application = create_app('production')
+
 from flask import Flask, render_template, request, url_for, redirect
 from models import (
 	User, 
@@ -183,23 +198,14 @@ from places.models import (
 	Feature, 
 	Place,
 	)
-from places.api import (
-	Api,
-	JsonResource,
-	PlaceList,
-	PlaceMeta,
-	CategoryList,
-	CatPlaces,
-	CategoryMeta,
-	APlace,
-	)
 
 from database import db
 
+
 def init_app():
-	db.init_app(app)
+	db.init_app(application)
 	db.create_all()
 
-with app.app_context():
+with application.app_context():
 	init_app()
 """
