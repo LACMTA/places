@@ -25,16 +25,16 @@ api = Api(
 	)
 
 def abort_if_place_doesnt_exist(place_id):
-	if not Place.query.filter(Place.id==place_id).count():
+	if not Place.query.filter(Place.id==place_id).filter(Place.active==True).count():
 		abort(404, message="Place {} doesn't exist".format(place_id))
 	else:
-		return Place.query.filter(Place.id==place_id).first()
+		return Place.query.filter(Place.id==place_id).filter(Place.active==True).first()
 
 def abort_if_category_doesnt_exist(cat_name):
-	if not Category.query.filter(Category.name==cat_name).count():
+	if not Category.query.filter(Category.name==cat_name).filter(Category.active==True).count():
 		abort(404, message="Category {} doesn't exist".format(cat_name))
 	else:
-		return Category.query.filter(Category.name==cat_name).first()
+		return Category.query.filter(Category.name==cat_name).filter(Category.active==True).first()
 
 def get_metas(Amodel):
 	(minstamp,maxstamp,ct) = Amodel.query.with_entities(
