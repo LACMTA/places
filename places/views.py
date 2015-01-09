@@ -3,8 +3,9 @@ from flask.views import View
 
 from places.api import (
 	JsonResource,
-	get_metas,
 	api,
+	get_metas,
+	abort_if_category_doesnt_exist,
 	)
 
 from places.models import (
@@ -23,7 +24,9 @@ def has_no_empty_params(rule):
 
 class Placemap(View):
 	def dispatch_request(self,category='tapvendors'):
-		placelist = [p for p in Place.query.filter(Place.active==True).all()]
+		mycat = abort_if_category_doesnt_exist(category)
+		mps = mycat.placecategories.all()
+		placelist = [p for p in mps]
 		return render_template('map.html', places=placelist, category=category)
 
 class Sitemap(View):

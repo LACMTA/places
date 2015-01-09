@@ -2,8 +2,10 @@
 <html>
 	<head>
 		{% block head %}
-		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-		<title>{% block title %}{% endblock %} - {{config.APP_NAME}}</title>
+			{% assets "css_all" -%}
+				<link rel="stylesheet" href="{{ ASSET_URL }}">
+				{%- endassets %}
+				<title>{% block title %}{% endblock %} - {{config.APP_NAME}}</title>
 		{% endblock %}
 	</head>
 	<body>

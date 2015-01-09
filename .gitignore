@@ -46,3 +46,4 @@ docs/_build/
 *.sqlite
 data.sqlite-journal
 templates_
+static/.webassets-cache

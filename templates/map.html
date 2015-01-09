@@ -1,29 +1,17 @@
-<html>
-	<head>
-		<title>{% block page_title %}Places{% endblock %}</title>
-		{% assets "css_all" -%}
-		  <link rel="stylesheet" href="{{ ASSET_URL }}">
-		{%- endassets %}
-	</head>
-	<body>
-		<div class="container">
-			{% block flash_messages %}
-				{% include "layouts/_messages.html" %}
-			{% endblock %}
-			{% block body %}
+{% extends "layout.html" %}
 
-				<H1>Metro Place locations for {{category}} category</H1>
-				{% include "layouts/_map.html" %}
+{% block content %}
 
-				<HR/>
-		
-				{% for place in places %}
-					<p>{{ place.name }}: {{ place.address }} {{ place.city }} {{ place.zipcode }} [{{ place.lat }}{{ place.lon }}]</p>
-				{% endfor %}
-			{% endblock %}
-		</div>
-		{% assets "js_vendor" -%}
-			<script src="{{ ASSET_URL }}"></script>
-		{% endassets %}
-	</body>
-</html>
+	<H1>Metro Place locations for {{category}} category</H1>
+	{% include "layouts/_map.html" %}
+
+	<HR/>
+
+	{% for place in places %}
+		<p>{{ place.name }}: {{ place.address }} {{ place.city }} {{ place.zipcode }} [{{ place.lat }}{{ place.lon }}]</p>
+	{% endfor %}
+
+	{% assets "js_vendor" -%}
+		<script src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+{% endblock %}

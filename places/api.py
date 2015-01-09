@@ -8,6 +8,14 @@ from flask.ext.restplus import (
 	abort,
 	)
 
+from places.models import (
+	Category,
+	Place,
+	Feature,
+	# Tag,
+	# TagRelationship,
+)
+
 api = Api(
 	contact='Douglas Goodwin <goodwind@metro.net>',
 	license='',

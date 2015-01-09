@@ -12,6 +12,7 @@ css_all = Bundle(
 					# css_places,
 					"css/bootstrap-theme.min.css",
 					"css/leaflet.css",
+					"css/style.css",
 					filters="cssmin", output="css/places.min.css",
 					)
 
