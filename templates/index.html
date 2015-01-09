@@ -2,8 +2,14 @@
 
 {% block content %}
 
-<h1>Welcome!</h1>
+	<h1>Welcome!</h1>
 
-<p>It works! This page is accessible from the public.</p>
+	<p>It works! This page is accessible from the public.</p>
+
+	{% for link in links %}
+		<ul>
+			<li>{{link}}
+		</ul>
+	{% endfor %}
 
 {% endblock %}

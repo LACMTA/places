@@ -1,47 +1,13 @@
-from flask import Flask, render_template, request, url_for, redirect
-from flask.ext.principal import Principal, Permission, RoleNeed
+import os, sys
+sys.path.append('/var/www/envs/places')
 from flask.ext.script import Manager, Server, Shell
-from flask.ext.security import (
-	SQLAlchemyUserDatastore, 
-	Security, 
-	login_required, 
-	current_user, 
-	logout_user,
-	)
-from flask.ext.security.utils import encrypt_password
-# import os, datetime
-import csv
+from flask.ext.sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
-from models import (
-	User, 
-	Role, 
-	SomeStuff, 
-	user_datastore,
-	)
-from places.models import (
-	Category, 
-	Feature, 
-	Place,
-	)
+from app import create_app
+application = create_app('development')
 
-from database import db
-# from admin import (
-# 	AdminModelView,
-# 	UserModelView,
-# 	LogoutView,
-# 	LoginView,
-# 	PlaceAdmin,
-# 	CategoryAdmin,
-# 	)
-
-# Configuration  ==============================================================
-app = Flask(__name__)
-app.config.from_object('config.DevelopmentConfig')
-
-# Setup Flask-Security  =======================================================
-security = Security(app, user_datastore)
-
-manager = Manager(app)
+manager = Manager(application)
 # manager.add_command("migrate", ManageMigrations())
 manager.add_command("runserver", Server(host='0.0.0.0', port=5000))
 manager.add_command("shell", Shell())
@@ -49,7 +15,7 @@ manager.add_command("shell", Shell())
 # Bootstrap  ==================================================================
 @manager.command
 def init_app():
-	db.init_app(app)
+	db.init_app(application)
 	db.create_all()
 
 
@@ -196,7 +162,7 @@ if __name__ == "__main__":
 	logging.basicConfig()
 	logging.getLogger().setLevel(logging.DEBUG)
 
-	with app.app_context():
+	with application.app_context():
 		init_app()
 		
 	manager.run()

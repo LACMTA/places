@@ -11,10 +11,9 @@ from flask.ext.security import (
 	# RoleMixin,
 	login_required,
 	)
-from flask.ext.restful import (
+from flask.ext.restplus import (
 	fields,
 	)
-from flask_restful_swagger import swagger
 
 from database import db
 
@@ -24,7 +23,6 @@ def set_stamp():
 	print "set the stamp to %s" %(stamp)
 	return int( stamp )
 
-@swagger.model
 class Category(db.Model):
 	"""Categories are groups of places."""
 	id = db.Column(db.Integer, primary_key=True)
@@ -78,7 +76,6 @@ placecategories = db.Table('placecategories',
 	db.Column('place_id', db.Integer, db.ForeignKey('place.id'))
 )
 
-@swagger.model
 class Feature(db.Model):
 	"""Places have Features"""
 	id = db.Column(db.Integer, primary_key=True)
@@ -107,7 +104,6 @@ class Feature(db.Model):
 			'description':self.description,
 		}
 
-@swagger.model
 class Place(db.Model):
 	"""Places are stable locations describable by addresses and lat/lon points"""
 	id = db.Column(db.Integer, primary_key=True)

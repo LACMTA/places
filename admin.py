@@ -5,10 +5,15 @@ from flask import redirect
 from flask.ext.security import logout_user
 from flask.ext.admin import (
 	BaseView, 
-	expose,
+	expose, 
 	)
 
 from database import db
+from models import (
+	User, 
+	Role, 
+	user_datastore,
+	)
 from places.models import (
 	Category, 
 	Feature, 
@@ -141,3 +146,5 @@ class FeatureAdmin(AdminModelView):
 	comment = db.Column(db.String(255))
 	url = db.Column(db.String(255))
 """
+
+

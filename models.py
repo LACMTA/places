@@ -40,10 +40,10 @@ class Role(db.Model, RoleMixin):
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
-class SomeStuff(db.Model):
-	__tablename__ = 'somestuff'
-	id = db.Column(db.Integer, primary_key=True)
-	data1 = db.Column(db.Integer)
-	data2 = db.Column(db.String(10))
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-	user = db.relationship(User, lazy='joined', join_depth=1, viewonly=True)
+# class SomeStuff(db.Model):
+# 	__tablename__ = 'somestuff'
+# 	id = db.Column(db.Integer, primary_key=True)
+# 	data1 = db.Column(db.Integer)
+# 	data2 = db.Column(db.String(10))
+# 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+# 	user = db.relationship(User, lazy='joined', join_depth=1, viewonly=True)
