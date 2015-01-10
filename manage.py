@@ -1,6 +1,7 @@
 import os, sys, csv
 sys.path.append('/var/www/envs/places')
 from flask.ext.script import Manager, Server, Shell
+from flask_security.utils import encrypt_password
 
 from app import create_app
 from database import db
