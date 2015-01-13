@@ -1,5 +1,9 @@
-from flask import Flask, current_app, url_for, render_template
+import cStringIO, csv
+from flask import Flask, current_app, url_for, render_template, send_file
 from flask.views import View
+from flask.ext.restplus import (
+	Resource,
+	)
 
 from places.api import (
 	JsonResource,
@@ -101,6 +105,25 @@ class CatPlaces(JsonResource):
 		placelist = [p.mydict() for p in mps]
 		return { "meta": metas,"objects": placelist }
 
+
+class PlacesCSV(View):
+	# like a class-based view
+	def dispatch_request(self,cat_name='tapvendors'):
+		outfile = "%s.csv" %(cat_name)
+		mycat = abort_if_category_doesnt_exist(cat_name)
+		metas = get_metas(Place)
+		mps = mycat.placecategories.all()
+
+		placelist = [p.get_serial() for p in mps]
+		dest = cStringIO.StringIO()
+		writer = csv.writer(dest)
+		for row in placelist:
+			writer.writerow(row)
+
+		dest.seek(0)
+		return send_file(dest,
+			attachment_filename=outfile,
+			as_attachment=True)
 
 @api.route('/api/category/<string:cat_name>/meta/','/api/category/<string:cat_name>/meta', endpoint='CategoryMeta')
 @api.doc(params={'cat_name': 'Place Category name'})

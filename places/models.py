@@ -147,6 +147,16 @@ class Place(db.Model):
 		'url': fields.String(),
 	}
 	
+	def get_featurelist(self):
+		return ', '.join( [p.description for p in self.features] )
+	
+	def get_catlist(self):
+		return ', '.join( [p.description for p in self.categories] )
+	
+	def get_serial(self):
+		ser = ( self.name,self.address,self.city,self.state,self.zipcode,self.get_featurelist(),self.get_catlist() )
+		return ser
+	
 	@property
 	def myCategory(self):
 		# legacy feature
