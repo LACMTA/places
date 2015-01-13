@@ -14,7 +14,7 @@
 	var placelist = [];
 	// append create new array and push it onto the array
 	{% for place in places %}
-	 placelist.push( ["<b>{{ place.name }}</b><br/>{{ place.address }}<br/>notes: {{ place.comment }}",{{ place.lat }},{{ place.lon }}] );
+	 placelist.push( ["<b>{{ place.name }}</b><br/>{{ place.address }}<br/>features: {{ place.get_featurelist() }}",{{ place.lat }},{{ place.lon }}] );
 	{% endfor %}
 	
 	for (var i = 0; i < placelist.length; i++) {
