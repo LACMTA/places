@@ -106,7 +106,7 @@ class CatPlaces(JsonResource):
 		return { "meta": metas,"objects": placelist }
 
 
-class PlacesCSV(View):
+class TAPVendorsCSV(View):
 	# like a class-based view
 	def dispatch_request(self,cat_name='tapvendors'):
 		outfile = "%s.csv" %(cat_name)

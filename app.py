@@ -20,7 +20,7 @@ from places.models import (
 from places.views import (
 	Sitemap,
 	Placemap,
-	PlacesCSV,
+	TAPVendorsCSV,
 	)
 from admin import (
 	AdminModelView, 
@@ -107,8 +107,8 @@ def create_app(config_name):
 	sitemap_view = Sitemap.as_view('sitemap')
 	app.add_url_rule('/sitemap', view_func=sitemap_view)
 	
-	csv_view = PlacesCSV.as_view('placescsv')
-	app.add_url_rule('/csv', view_func=csv_view)
+	tapvendors_csv_view = TAPVendorsCSV.as_view('tapvendors_csv')
+	app.add_url_rule('/csv/tapvendors', view_func=tapvendors_csv_view)
 	
 	placemap_view = Placemap.as_view('placemap')
 	app.add_url_rule('/placemap/', 
