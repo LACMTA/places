@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+	<H1>Metro Place locations for {{category}} category</H1>
+	{% include "layouts/_map.html" %}
+
+	<HR/>
+
+	{% for place in places %}
+		<p>{{ place.name }}: {{ place.address }} {{ place.city }} {{ place.zipcode }} [{{ place.lat }}{{ place.lon }}]</p>
+	{% endfor %}
+
+	{% assets "js_vendor" -%}
+		<script src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+{% endblock %}

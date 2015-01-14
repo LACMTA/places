@@ -1,14 +1,9 @@
-import os
-from metroplaces.app import (
-	app,
-	)
-from metroplaces.admin import (
-	admin,
-	create_tables,
-	UserAdmin,
-	PlaceAdmin,
-	)
+import os, sys
+sys.path.append('/var/www/envs/places')
 
-if __name__ == "__main__":
-	port = int(os.environ.get('PORT', 5000))
-	app.run(host='0.0.0.0', port=port)
+from app import create_app
+application = create_app('production')
+
+# Start server  ===============================================================
+if __name__ == '__main__':		
+	application.run()
