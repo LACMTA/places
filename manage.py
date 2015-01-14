@@ -12,7 +12,7 @@ from places.models import (
 	# Tag,
 	# TagRelationship,
 )
-from .models import User, Role
+from models import User, Role
 
 # application = create_app('development')
 application = create_app('production')
