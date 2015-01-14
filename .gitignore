@@ -1,78 +1,12 @@
-<<<<<<< HEAD
-__pycache__/
-*.py[cod]
-*.so
-*.egg
-env/
-build/
-*.egg-info
-dist
-build
-eggs
-lib/
-lib64/
-parts
-bin
-var
-sdist
-bin/
-src/
-develop-eggs
-.installed.cfg
-lib
-*.manifest
-lib64
-pip-log.txt
-pip-delete-this-directory.txt
-htmlcov/
-.tox/
-.coverage
-.tox
-nosetests.xml
-coverage.xml
-*.mo
-.mr.developer.cfg
-.project
-.pydevproject
-target/
-*.sublime-project
-*.sublime-workspace
-.webassets-cache
-generated.css
-generated.js
-tmp
-.DS_Store
-venv
-.Python
-include
-metroplaces.sqlite
-metroplaces/metroplaces.db
-share/man/man1/ipcluster.1
-share/man/man1/ipcontroller.1
-share/man/man1/ipengine.1
-share/man/man1/ipython.1
-share
-metroplaces/templates/index.html_.html
-data.db
-places/static/dependencies/Site title and description - Webmaster Tools Help_files
-places/static/dependencies/Site title and description - Webmaster Tools Help.html
-static/dependencies/Site title and description - Webmaster Tools Help_files
-static/dependencies/Site title and description - Webmaster Tools Help.html
-metroplaces_dev.db
-places.tgz
-*.tgz
-metroplaces/static/css/places.min.css
-metroplaces/static/js/vendor.min.js
-=======
 *.egg
 *.egg-info
 *.egg-info/
 *.mo
 *.pyc
-*.pyc
 *.pyo
 *.py[cod]
 *.so
+*.sw[a-z]
 *.sqlite
 .cache
 .coverage
@@ -108,4 +42,3 @@ templates_
 var/
 _mailinglist
 __pycache__/
->>>>>>> auth
