@@ -12,6 +12,10 @@ from places.models import (
 	# Tag,
 	# TagRelationship,
 )
+from models import (
+	User, 
+	Role, 
+	)
 
 # application = create_app('development')
 application = create_app('production')
@@ -27,6 +31,45 @@ def init_app():
 	db.init_app(application)
 	db.create_all()
 
+@manager.command
+def add_stations():
+	"""
+		Add the station features, categories, 
+		then add the stations
+	"""
+	rails= Category(name='railstations',description='Rail Stations')
+	db.session.add(rails)
+	locker_f= Feature(name='bikelockers',description='Bike Lockers')
+	db.session.add(locker_f)
+	stations=csv.DictReader(open('data/railstations.csv','rU'), delimiter=",")
+	"""['stop_id',
+		 'stop_code',
+		 'stop_name',
+		 'stop_desc',
+		 'stop_lat',
+		 'stop_lon',
+		 'stop_url',
+		 'location_type',
+		 'parent_station',
+		 'tpis_name']"""
+	for row in stations:
+		try:
+			myfeatures = [locker_f]
+			comment = "parent_station:%s" %(row['parent_station'])
+			vndr=Place(name=row['stop_name'],
+				lat=row['stop_lat'],
+				lon=row['stop_lon'],
+				features=myfeatures,
+				categories=[rails],
+				comment=comment,
+				)
+			vndr._reversegeocode(row['stop_lat'],row['stop_lon'])
+			print vndr.name
+			db.session.add(vndr)
+		except Exception as e:
+			print "blargh! %s" %(e)
+	# Now, COMMIT!
+	db.session.commit()
 
 @manager.command
 def add_places():
@@ -110,11 +153,11 @@ def add_admin(email='test@email.com',firstname='Testy',lastname='Test',password=
 
 	# set up the admin role if necessary
 	try:
+		admin_role = Role.query.filter(Role.name=='admin').first()
+	except:
 		admin_role = Role(name='admin',description='Administrator')
 		db.session.add(admin_role)
 		db.session.commit()
-	except:
-		admin_role = Role.query.filter(Role.name=='admin').first()
 		
 	# add this user unless s/he already exists
 	try:

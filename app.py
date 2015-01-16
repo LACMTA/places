@@ -20,7 +20,9 @@ from places.models import (
 from places.views import (
 	Sitemap,
 	Placemap,
+	Railmap,
 	TAPVendorsCSV,
+	RailStationsCSV,
 	)
 from admin import (
 	AdminModelView, 
@@ -109,10 +111,22 @@ def create_app(config_name):
 	
 	tapvendors_csv_view = TAPVendorsCSV.as_view('tapvendors_csv')
 	app.add_url_rule('/csv/tapvendors', view_func=tapvendors_csv_view)
-	
+	railstations_csv_view = RailStationsCSV.as_view('railstations_csv')
+	app.add_url_rule('/csv/railstations', view_func=railstations_csv_view)
+
 	placemap_view = Placemap.as_view('placemap')
 	app.add_url_rule('/placemap/', 
 		view_func=placemap_view,
+		methods=['GET'],
+		)
+	placemaptapvendors_view = Placemap.as_view('placemaptapvendors')
+	app.add_url_rule('/placemap/tapvendors', 
+		view_func=placemaptapvendors_view,
+		methods=['GET'],
+		)
+	placemaprailstations_view = Railmap.as_view('placemaprailstations')
+	app.add_url_rule('/placemap/railstations', 
+		view_func=placemaprailstations_view,
 		methods=['GET'],
 		)
 	# app.add_url_rule('/placemap/<string:category>',
