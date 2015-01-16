@@ -1,5 +1,4 @@
 from flask import Flask, render_template, url_for
-# from flask_jwt import JWT
 from flask.ext.admin import Admin
 from flask.ext.principal import Principal
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -129,11 +128,6 @@ def create_app(config_name):
 		view_func=placemaprailstations_view,
 		methods=['GET'],
 		)
-	# app.add_url_rule('/placemap/<string:category>',
-	# 	defaults={'category': 'tapvendors'},
-	# 	view_func=placemap_view,
-	# 	methods=['GET'],
-	# 	)
 
 	return app
 
