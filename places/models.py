@@ -189,3 +189,28 @@ class Place(db.Model):
 			# for backwards compatibility
 		}
 
+	def csvdict(self):
+		return {
+			'name':self.name,
+			'id':self.id,
+			'description':self.description,
+			'active':self.active,
+			'address':self.address,
+			'city':self.city,
+			'state':self.state,
+			'zipcode':self.zipcode,
+			'phone':self.phone,
+			'lat':float(self.lat),
+			'lon':float(self.lon),
+			'stamp':self.stamp,
+			'pub_date':str(self.pub_date),
+			'comment':self.comment,
+			'active':self.active,
+			# 'features':[p.mydict() for p in self.features],
+			# 'categories':[c.mydict() for c in self.categories],
+			'categories':self.get_catlist(),
+			'features':self.get_featurelist(),
+			'category':self.myCategory['name'],	# legacy
+			# for backwards compatibility
+		}
+
