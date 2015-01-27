@@ -35,6 +35,14 @@ class Placemap(View):
 		placelist = [p for p in mps]
 		return render_template('map.html', places=placelist, category=category)
 
+class Railmap(View):
+	def dispatch_request(self,category='railstations'):
+		mycat = abort_if_category_doesnt_exist(category)
+		# mycat = Category.query.filter(Category.name==cat_name).filter(Category.active==True).count()
+		mps = mycat.placecategories.all()
+		placelist = [p for p in mps]
+		return render_template('map.html', places=placelist, category=category)
+
 class Sitemap(View):
 	# like a class-based view
 	def dispatch_request(self):
@@ -111,12 +119,33 @@ class TAPVendorsCSV(View):
 	def dispatch_request(self,cat_name='tapvendors'):
 		outfile = "%s.csv" %(cat_name)
 		mycat = abort_if_category_doesnt_exist(cat_name)
-		metas = get_metas(Place)
+		# metas = get_metas(Place)
 		mps = mycat.placecategories.all()
-
-		placelist = [p.get_serial() for p in mps]
+		fieldnames = ['name','address','city','state','zipcode','features','categories','comment', 'lat', 'stamp', 'lon', 'phone', 'active', 'category', 'pub_date', 'id', 'description']
+		placelist = [p.csvdict() for p in mps]
 		dest = cStringIO.StringIO()
-		writer = csv.writer(dest)
+		writer = csv.DictWriter(dest, fieldnames=fieldnames)
+		writer.writeheader()
+		for row in placelist:
+			writer.writerow(row)
+
+		dest.seek(0)
+		return send_file(dest,
+			attachment_filename=outfile,
+			as_attachment=True)
+
+class RailStationsCSV(View):
+	# like a class-based view
+	def dispatch_request(self,cat_name='railstations'):
+		outfile = "%s.csv" %(cat_name)
+		mycat = abort_if_category_doesnt_exist(cat_name)
+		# metas = get_metas(Place)
+		mps = mycat.placecategories.all()
+		fieldnames = ['name','address','city','state','zipcode','features','categories','comment', 'lat', 'stamp', 'lon', 'phone', 'active', 'category', 'pub_date', 'id', 'description']
+		placelist = [p.csvdict() for p in mps]
+		dest = cStringIO.StringIO()
+		writer = csv.DictWriter(dest, fieldnames=fieldnames)
+		writer.writeheader()
 		for row in placelist:
 			writer.writerow(row)
 

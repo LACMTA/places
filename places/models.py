@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 import simplejson as json
 import geopy
-from geopy.geocoders import GoogleV3
+from geopy.geocoders import GoogleV3, Nominatim
 from flask.ext.security import (
 	Security,
 	# SQLAlchemyUserDatastore,
@@ -25,7 +25,7 @@ def set_stamp():
 class Category(db.Model):
 	"""Categories are groups of places."""
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(50))
+	name = db.Column(db.String(50),unique=True)
 	description = db.Column(db.String(255))
 	stamp = db.Column(db.Integer, default=set_stamp() ) # 1417737461016
 	active =  db.Column(db.Boolean(), default=True)
@@ -62,7 +62,7 @@ placecategories = db.Table('placecategories',
 class Feature(db.Model):
 	"""Places have Features"""
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(50))
+	name = db.Column(db.String(50),unique=True)
 	description = db.Column(db.String(255))
 	stamp = db.Column(db.Integer, default=set_stamp() ) # 1417737461016
 	active =  db.Column(db.Boolean(), default=True)
@@ -108,7 +108,9 @@ class Place(db.Model):
 	
 	def _geocode(self, address,city,state,zipcode):
 		print "LET'S GEOCODE!"
-		geolocator = GoogleV3()
+		proxies = {"https":"mtaweb.metro.net:8118"}
+		api_key="AIzaSyAJmxEb1O6GJMxP9QuhCc4-HV2aae2FolA"
+		geolocator = GoogleV3(api_key=api_key)
 		addrstr = "%s %s, %s %s" %(address,city, state, zipcode)		
 		try:
 			print "{{{{{{{{{{{{{ _geocode() }}}}}}}}}}}}}"
@@ -116,13 +118,58 @@ class Place(db.Model):
 			print loc
 			self.lat = loc.latitude
 			self.lon = loc.longitude
+			self.stamp = set_stamp()
 			db.session.commit()
 			return loc.latitude,loc.longitude
 		except Exception, e:
-			print "GEOCODER FAIL: %s. Maybe try setting the proxy?" %(e)
-			myg.set_proxy('mtaweb.metro.net:8118')
+			proxies = {"http":"mtaweb.metro.net:8118"}
+			geolocator = Nominatim()
 			loc = geolocator.geocode(addrstr)
-			return 0.0,0.0
+			print loc
+			self.lat = loc.latitude
+			self.lon = loc.longitude
+			self.stamp = set_stamp()
+			db.session.commit()
+			return loc.latitude,loc.longitude
+
+	
+	def _reversegeocode(self, lat,lon):
+		print "LET'S REVERSE GEOCODE!"
+		proxies = {"https":"mtaweb.metro.net:8118"}
+		api_key="AIzaSyAJmxEb1O6GJMxP9QuhCc4-HV2aae2FolA"
+		geolocator = GoogleV3(api_key=api_key)
+		latlonstr = "%s,%s" %(lat,lon)
+		try:
+			print "{{{{{{{{{{{{{ _reverse() }}}}}}}}}}}}}"
+			loc = geolocator.reverse(latlonstr,exactly_one=True)
+			print loc
+			formatted = loc.raw['formatted_address'].split(',')
+			# [u'127-191 West 1st Street', u' San Pedro', u' CA 90731', u' USA']
+			self.address=formatted[0].strip()
+			self.city=formatted[-3].strip()
+			self.state='CA' 	# yucky
+			self.zipcode=formatted[-2].strip().split(' ')[1] # ditto
+			self.stamp = set_stamp()
+			db.session.commit()
+			return loc.raw['formatted_address']
+		except Exception, e:
+			print "GoogleV3 REVERSE GEOCODER FAIL: %s." %(e)
+			try:
+				proxies = {"http":"mtaweb.metro.net:8118"} # no SSL for Nominatim
+				geolocator = Nominatim()
+				location = geolocator.reverse(latlonstr,exactly_one=True)
+				print location
+				formatted = location.address.split(',')
+				self.address="%s %s" %(formatted[1].strip(),formatted[2].strip())
+				self.city=formatted[-4].strip()
+				self.state='CA'
+				self.zipcode=formatted[-2].strip()
+				self.stamp = set_stamp()
+				db.session.commit()
+				return location.address
+			except Exception, e:
+				print "REVERSE GEOCODER FINAL FAIL: %s." %(e)
+				return "1 Gateway Plaza, Los Angeles, CA"
 
 	# FKs
 	features = db.relationship('Feature', secondary=placefeatures, 
@@ -186,6 +233,31 @@ class Place(db.Model):
 			'features':[p.mydict() for p in self.features],
 			'categories':[c.mydict() for c in self.categories],
 			'category':self.myCategory,	# legacy
+			# for backwards compatibility
+		}
+
+	def csvdict(self):
+		return {
+			'name':self.name,
+			'id':self.id,
+			'description':self.description,
+			'active':self.active,
+			'address':self.address,
+			'city':self.city,
+			'state':self.state,
+			'zipcode':self.zipcode,
+			'phone':self.phone,
+			'lat':float(self.lat),
+			'lon':float(self.lon),
+			'stamp':self.stamp,
+			'pub_date':str(self.pub_date),
+			'comment':self.comment,
+			'active':self.active,
+			# 'features':[p.mydict() for p in self.features],
+			# 'categories':[c.mydict() for c in self.categories],
+			'categories':self.get_catlist(),
+			'features':self.get_featurelist(),
+			'category':self.myCategory['name'],	# legacy
 			# for backwards compatibility
 		}
 
