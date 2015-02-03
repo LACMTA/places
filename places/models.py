@@ -1,4 +1,5 @@
 import pytz
+from random import randrange
 import time
 from datetime import datetime
 import simplejson as json
@@ -14,20 +15,34 @@ from flask.ext.security import (
 from flask.ext.restplus import (
 	fields,
 	)
+from flask.ext.sqlalchemy import models_committed
+from flask import current_app
 
 from database import db
 
+# everythign here is for updating timestamps on update
 def set_stamp():
 	d = datetime.now()
-	stamp = (int(time.mktime(d.timetuple())) *1000) +(d.microsecond/100)
+	# careful -- this may require a BigInteger
+	stamp = (int(time.mktime(d.timetuple())) *10) +int( randrange(0, 10) )
 	return int( stamp )
+
+def update_instance(obj):
+	obj.stamp = set_stamp()
+
+def on_models_committed(sender, changes):
+	 for model, change in changes:
+		 update_instance(model)
+
+models_committed.connect(on_models_committed, sender=current_app)
+# END updating timestamps on update
 
 class Category(db.Model):
 	"""Categories are groups of places."""
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50),unique=True)
 	description = db.Column(db.String(255))
-	stamp = db.Column(db.Integer, default=set_stamp() ) # 1417737461016
+	stamp = db.Column(db.BigInteger, default=set_stamp() ) # 1417737461016
 	active =  db.Column(db.Boolean(), default=True)
 
 	resource_fields = {
@@ -64,7 +79,7 @@ class Feature(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50),unique=True)
 	description = db.Column(db.String(255))
-	stamp = db.Column(db.Integer, default=set_stamp() ) # 1417737461016
+	stamp = db.Column(db.BigInteger, default=set_stamp() ) # 1417737461016
 	active =  db.Column(db.Boolean(), default=True)
 
 	resource_fields = {
@@ -92,7 +107,7 @@ class Place(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	description = db.Column(db.String(255))
-	stamp = db.Column(db.Integer, default=set_stamp() ) # 1417737461016
+	stamp = db.Column(db.BigInteger, default=set_stamp() ) # 1417737461016
 	active =  db.Column(db.Boolean(), default=True)
 	#
 	pub_date = db.Column(db.DateTime(), default=datetime.now() )
@@ -105,7 +120,7 @@ class Place(db.Model):
 	phone = db.Column(db.String(16),default='2135551212')
 	comment = db.Column(db.String(255))
 	url = db.Column(db.String(255))
-	
+
 	def _geocode(self, address,city,state,zipcode):
 		print "LET'S GEOCODE!"
 		proxies = {"https":"mtaweb.metro.net:8118"}
