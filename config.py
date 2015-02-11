@@ -7,7 +7,7 @@ class Config(object):
 	TESTING = False
 	SQLALCHEMY_DATABASE_URI = ''
 	SQLALCHEMY_TRACK_MODIFICATIONS = True
-	SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+	SQLALCHEMY_COMMIT_ON_TEARDOWN = False
 	APP_NAME = 'Metro Places'
 	SECRET_KEY = 'this is a test'
 	JWT_EXPIRATION_DELTA = timedelta(days=30)
