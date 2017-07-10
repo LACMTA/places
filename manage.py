@@ -17,8 +17,8 @@ from models import (
 	Role, 
 	)
 
-# application = create_app('development')
-application = create_app('production')
+application = create_app('development')
+# application = create_app('production')
 
 manager = Manager(application)
 # manager.add_command("migrate", ManageMigrations())
